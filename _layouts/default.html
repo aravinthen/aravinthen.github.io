@@ -2,44 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{ page.title }} · {{ site.title }}</title>
+  <title>{{ page.title | default: site.title }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 </head>
 
-<header class="site-header">
-  <div class="header-inner">
-    <h1><a href="/">{{ site.title }}</a></h1>
-    <p class="subtitle">{{ site.description }}</p>
-
-    <nav class="section-nav">
-      <a href="/literature/">Literature</a>
-      <a href="/technical/">Technical</a>
-      <a href="/projects/">Projects</a>
-      <a href="/miscellaneous/">Misc</a>
-    </nav>
-  </div>
-</header>
-
-<nav class="section-nav">
-  <a href="/literature/" class="{% if page.section == 'literature' %}active{% endif %}">Literature</a>
-  <a href="/technical/" class="{% if page.section == 'technical' %}active{% endif %}">Technical</a>
-  <a href="/projects/" class="{% if page.section == 'projects' %}active{% endif %}">Projects</a>
-  <a href="/misc/" class="{% if page.section == 'misc' %}active{% endif %}">Misc</a>
-</nav>
-
 <body>
   <main class="container">
+
+    <!-- SITE HEADER: ONLY PLACE IT SHOULD EXIST -->
     <header class="site-header">
-      <h1><a href="/">{{ site.title }}</a></h1>
-      <p class="subtitle">{{ site.description }}</p>
+      <div class="header-inner">
+        <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
+        <p class="subtitle">{{ site.description }}</p>
+
+        <nav class="section-nav">
+          <a href="{{ '/literature/' | relative_url }}">Literature</a>
+          <a href="{{ '/technical/' | relative_url }}">Technical</a>
+          <a href="{{ '/projects/' | relative_url }}">Projects</a>
+          <a href="{{ '/misc/' | relative_url }}">Misc</a>
+        </nav>
+      </div>
     </header>
 
+    <!-- PAGE CONTENT -->
     {{ content }}
 
-    <footer class="site-footer">
-      <p>© {{ site.time | date: "%Y" }} {{ site.author }}</p>
-    </footer>
   </main>
 </body>
 </html>

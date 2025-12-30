@@ -1,70 +1,40 @@
 ---
+layout: default
+title: Home
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ site.title }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{{ site.description }}">
-  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-</head>
-
-<body>
-  <main class="container">
-   
-    <section class="about">
-      <h2>Purpose</h2>
-      <p>
-        This is a living research log where I document papers I read, technical concepts I study, and progress on my own research projects.
-      </p>
-      <p>
-        My primary interest is in the design and analysis of autonomous systems. Much of my research effort is based around <b>deep reinforcement learning</b>, optimization and multi-agent systems. I am also slowly but seriously making progress in studying parallel and distributed computation as applied to training deep neural networks. 
-      </p> 
-      <p> 
-        A secondary interest of mine is probabilistic computing, which includes quantum computation. My interest in this field is almost entirely based around its applications to optimisation, which has been a key theme of my work since my graduate days.
-      </p>
-    </section>
+<section class="about">
+  <h2>Purpose</h2>
+  <p>
+      This is a living research log where I document papers I read, technical concepts I study, and progress on my own research projects.
+  </p>
+  <p>
+      My primary interest is in the design and analysis of autonomous systems. Much of my research effort is based around <b>deep reinforcement learning</b>, optimization and multi-agent systems. I am also slowly but seriously making progress in studying parallel and distributed computation as applied to training deep neural networks. 
+  </p> 
+  <p> 
+      A secondary interest of mine is probabilistic computing, which includes quantum computation. My interest in this field is almost entirely based around its applications to optimisation, which has been a key theme of my work since my graduate days.
+  </p>
+</section>
     
-    <section class="about">
-      <h2>About me</h2>
-      <p>
-        My name is Aravinthen Rajkumar. I'm currently employed as an algorithm engineer in at a defense company in the UK, where I currently work on deep reinforcement learning. I'm afraid that this is all I'm at liberty to share about what I do. 
-      </p>
-      <p>
-        I was a computational physicist in a previous life. I completed my PhD with the Centre of Doctoral Training in the Modelling of Heterogeneous Systems at the University of Warwick. My graduate work was based around developing advanced Monte Carlo algorithms for self-assembling soft matter systems.
-      </p>
-    </section>
+<section class="about">
+  <h2>About me</h2>
+  <p>
+      My name is Aravinthen Rajkumar. I'm currently employed as an algorithm engineer in at a defense company in the UK, where I currently work on deep reinforcement learning. I'm afraid that this is all I'm at liberty to share about what I do. 
+  </p>
+  <p>
+      I was a computational physicist in a previous life. I completed my PhD with the Centre of Doctoral Training in the Modelling of Heterogeneous Systems at the University of Warwick. My graduate work was based around developing advanced Monte Carlo algorithms for self-assembling soft matter systems.
+  </p>
+</section>
 
-    <section>
-      <h2>Sections</h2>
-      <ul>
-        <li><a href="/technical/">Technical Notes</a></li>
-        <li><a href="/projects/">Research Projects</a></li>
-        <li><a href="/literature/">Literature Reviews</a></li>
-        <li><a href="/misc/">Miscellaneous</a></li>
-      </ul>
-    </section>
+<section>
+  <h2>Recent Posts</h2>
+  <ul>
+    {% for post in site.posts limit:5 %}
+      <li>
+        <a href="{{ post.url }}">{{ post.title }}</a>
+        <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
 
-    <section class="recent">
-      <h2>Recent Posts</h2>
-      <ul>
-        {% for post in site.posts limit:5 %}
-          <li>
-            <a href="{{ post.url }}">{{ post.title }}</a>
-            <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
-          </li>
-        {% endfor %}
-      </ul>
-    </section>
-
-    <footer class="site-footer">
-      <p>
-        © {{ site.time | date: "%Y" }} {{ site.author }} ·
-        Built with GitHub Pages
-      </p>
-    </footer>
-  </main>
-</body>
-</html>
 
