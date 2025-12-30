@@ -33,15 +33,16 @@ body {
 /* Header */
 .site-header h1 {
   font-size: 1.8rem;
-  font-weight: normal;
+  font-weight: 500;
   margin: 0 0 0.5rem 0;
   color: var(--accent);
-  margin-bottom: 2.5rem;
+  margin-top: 0;
+  margin-bottom: 0.2rem;
 }
 
 .header-inner {
-  max-width: 520px;   /* narrower than content */
-  margin: 0 auto;     /* centers block */
+  max-width: 720px;   /* match content width */
+  margin: 0 auto;
 }
 
 .subtitle {
