@@ -7,6 +7,18 @@
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 </head>
 
+<header class="site-header">
+  <h1><a href="/">{{ site.title }}</a></h1>
+  <p class="subtitle">{{ site.description }}</p>
+</header>
+
+<nav class="section-nav">
+  <a href="/literature/" class="{% if page.section == 'literature' %}active{% endif %}">Literature</a>
+  <a href="/technical/" class="{% if page.section == 'technical' %}active{% endif %}">Technical</a>
+  <a href="/projects/" class="{% if page.section == 'projects' %}active{% endif %}">Projects</a>
+  <a href="/about/">About</a>
+</nav>
+
 <body>
   <main class="container">
     <header class="site-header">
