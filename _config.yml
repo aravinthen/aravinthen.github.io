@@ -1,0 +1,12 @@
+title: Aravinthen's Research Notes
+description: Discovering complex autonomy through deep reinforcement learning and optimization.
+author: Aravinthen Rajkumar
+theme: null
+
+markdown: kramdown
+highlighter: rouge
+
+permalink: /:year/:month/:day/:title/
+
+exclude:
+  - README.md

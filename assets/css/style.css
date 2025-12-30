@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  background: #fafafa;
+  color: #222;
+}
+
+.container {
+  max-width: 820px;
+  margin: auto;
+  padding: 2rem 1.5rem;
+}
+
+.site-header {
+  margin-bottom: 3rem;
+}
+
+.site-header h1 {
+  font-size: 2.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #555;
+}
+
+.about, .recent {
+  margin-bottom: 3rem;
+}
+
+.sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  padding: 1.5rem;
+  border-radius: 6px;
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+.recent ul {
+  list-style: none;
+  padding: 0;
+}
+
+.recent li {
+  margin-bottom: 0.75rem;
+}
+
+.recent a {
+  text-decoration: none;
+  color: #0066cc;
+}
+
+.recent a:hover {
+  text-decoration: underline;
+}
+
+.date {
+  color: #777;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
+
+.site-footer {
+  border-top: 1px solid #ddd;
+  padding-top: 1rem;
+  color: #777;
+  font-size: 0.9rem;
+}

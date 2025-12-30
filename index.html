@@ -1,22 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aravinthen Rajkumar</title>
-    <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f4f4f9; }
-        .card { text-align: center; padding: 2rem; background: white; border-radius: 8px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #333; }
-        a { color: #0366d6; text-decoration: none; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8">
+  <title>{{ site.title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="/assets/css/style.css">
 </head>
+
 <body>
-    <div class="card">
-        <h1>Hello, World!</h1>
-        <p>Welcome to my GitHub Pages site.</p>
-        <p><a href="github.com">View my GitHub Profile</a></p>
-    </div>
+  <main class="container">
+    <header class="site-header">
+      <h1>{{ site.title }}</h1>
+      <p class="subtitle">{{ site.description }}</p>
+    </header>
+
+    <section class="about">
+      <h2>About</h2>
+      <p>
+        This is a living research log where I document papers I read,
+        technical concepts I study, and progress on my own research projects.
+      </p>
+      <p>
+        Primary interests include deep reinforcement learning,
+        optimization, multi-agent systems, and learning theory.
+      </p>
+    </section>
+
+    <section class="sections">
+      <div class="card">
+        <h3>📚 Literature Notes</h3>
+        <p>Summaries, critiques, and distilled insights from papers and books.</p>
+      </div>
+
+      <div class="card">
+        <h3>🛠 Technical Notes</h3>
+        <p>Derivations, implementation details, and experiments.</p>
+      </div>
+
+      <div class="card">
+        <h3>🚧 Research Projects</h3>
+        <p>Ongoing work, ideas, failures, and progress reports.</p>
+      </div>
+    </section>
+
+    <section class="recent">
+      <h2>Recent Posts</h2>
+      <ul>
+        {% for post in site.posts limit:5 %}
+          <li>
+            <a href="{{ post.url }}">{{ post.title }}</a>
+            <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <footer class="site-footer">
+      <p>
+        © {{ site.time | date: "%Y" }} {{ site.author }} ·
+        Built with GitHub Pages
+      </p>
+    </footer>
+  </main>
 </body>
 </html>
 
