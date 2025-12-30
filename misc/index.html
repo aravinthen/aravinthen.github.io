@@ -1,0 +1,17 @@
+---
+layout: default
+title: Miscellaneous
+---
+
+<h2>Technical Notes</h2>
+
+<ul>
+  {% for post in site.posts %}
+    {% if post.category == "misc" %}
+      <li>
+        <a href="{{ post.url }}">{{ post.title }}</a>
+        <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>
