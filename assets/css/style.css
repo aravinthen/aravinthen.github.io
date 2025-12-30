@@ -1,79 +1,94 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1.6;
-  background: #fafafa;
-  color: #222;
+  padding: 0;
+  background: #ffffff;
+  color: #000000;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  line-height: 1.65;
+  font-size: 17px;
 }
 
+/* Layout */
 .container {
-  max-width: 820px;
-  margin: auto;
-  padding: 2rem 1.5rem;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
 }
 
+/* Header */
 .site-header {
   margin-bottom: 3rem;
 }
 
 .site-header h1 {
-  font-size: 2.4rem;
-  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: normal;
 }
 
 .subtitle {
-  color: #555;
+  margin: 0;
+  color: #333;
 }
 
-.about, .recent {
-  margin-bottom: 3rem;
+/* Sections */
+section {
+  margin-bottom: 2.5rem;
 }
 
-.sections {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-
-.card {
-  background: white;
-  border: 1px solid #e0e0e0;
-  padding: 1.5rem;
-  border-radius: 6px;
-}
-
-.card h3 {
-  margin-top: 0;
-}
-
-.recent ul {
-  list-style: none;
-  padding: 0;
-}
-
-.recent li {
+h2 {
+  font-size: 1.25rem;
+  font-weight: normal;
   margin-bottom: 0.75rem;
 }
 
-.recent a {
-  text-decoration: none;
-  color: #0066cc;
+p {
+  margin: 0 0 1rem 0;
 }
 
-.recent a:hover {
+/* Lists */
+ul {
+  padding-left: 1.25rem;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+/* Links */
+a {
+  color: #0000ee;
+  text-decoration: none;
+}
+
+a:hover {
   text-decoration: underline;
 }
 
+/* Recent posts */
+.recent ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.recent li {
+  margin-bottom: 0.4rem;
+}
+
 .date {
-  color: #777;
-  font-size: 0.9rem;
+  color: #555;
+  font-size: 0.85rem;
   margin-left: 0.5rem;
 }
 
+/* Footer */
 .site-footer {
-  border-top: 1px solid #ddd;
-  padding-top: 1rem;
-  color: #777;
-  font-size: 0.9rem;
+  margin-top: 3rem;
+  font-size: 0.85rem;
+  color: #555;
 }
