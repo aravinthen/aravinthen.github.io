@@ -161,3 +161,62 @@ pre {
   color: #ffd7a0;
   font-weight: bold;
 }
+
+/* Logbook */
+
+.log-index {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.log-item {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 0.8rem;
+  font-family: monospace;
+}
+
+.log-item-date {
+  color: #ff9f1c;
+  opacity: 0.8;
+  min-width: 100px;
+}
+
+.log-item-title {
+  color: #eaeaea;
+  text-decoration: none;
+}
+
+.log-item-title:hover {
+  text-decoration: underline;
+}
+
+.log-entry {
+  max-width: 700px;
+  margin: 0 auto;
+  font-family: monospace;
+}
+
+.log-header {
+  margin-bottom: 2rem;
+}
+
+.log-date {
+  color: #ff9f1c;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.log-title {
+  margin-top: 0.2rem;
+}
+
+.log-tags {
+  margin-top: 3rem;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.tag {
+  margin-right: 0.5rem;
+}

@@ -8,5 +8,10 @@ highlighter: rouge
 
 permalink: /:year/:month/:day/:title/
 
+collections:
+  log:
+    output: true
+    permalink: /log/:year-:month-:day/
+
 exclude:
   - README.md

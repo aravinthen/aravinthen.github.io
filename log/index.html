@@ -1,0 +1,22 @@
+---
+layout: default
+title: Logbook
+---
+
+<section class="log-index">
+  <h1>Logbook</h1>
+
+  {% assign logs = site.log | sort: "date" | reverse %}
+
+  {% for entry in logs %}
+    <div class="log-item">
+      <span class="log-item-date">
+        {{ entry.date | date: "%Y-%m-%d" }}
+      </span>
+
+      <a class="log-item-title" href="{{ entry.url }}">
+        {{ entry.title | default: "Untitled entry" }}
+      </a>
+    </div>
+  {% endfor %}
+</section>
