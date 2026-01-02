@@ -184,13 +184,13 @@ pre {
 }
 
 .log-item-date {
-  color: #ff9f1c;
+  color: #eaeaea;
   opacity: 0.8;
   min-width: 100px;
 }
 
 .log-item-title {
-  color: #eaeaea;
+  color: #ff9f1c;
   text-decoration: none;
 }
 
@@ -212,12 +212,6 @@ pre {
   color: #ff9f1c;
   font-size: 0.9rem;
   opacity: 0.8;
-}
-
-.log-title {
-  font-size: inherit;
-  font-weight: inherit;
-  color: inherit;
 }
 
 .log-tags {
