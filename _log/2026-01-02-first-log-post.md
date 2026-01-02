@@ -1,6 +1,6 @@
 ---
 layout: log
-title: First log post - the calm before the storm
+title: The calm before the storm
 date: 2026-01-02
 tags: [website]
 ---

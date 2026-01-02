@@ -184,9 +184,10 @@ pre {
 }
 
 .log-item-date {
-  color: #eaeaea;
+  color: var(--muted);
   opacity: 0.8;
   min-width: 100px;
+  font-size: 0.85rem;
 }
 
 .log-item-title {
