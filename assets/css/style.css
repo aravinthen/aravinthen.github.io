@@ -81,6 +81,13 @@ section {
   margin-top: 2.5rem;
 }
 
+h1 {
+  font-size: 1.4rem;
+  font-weight: normal;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
 h2 {
   font-size: 1.2rem;
   font-weight: normal;
@@ -208,7 +215,9 @@ pre {
 }
 
 .log-title {
-  margin-top: 0.2rem;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
 }
 
 .log-tags {
