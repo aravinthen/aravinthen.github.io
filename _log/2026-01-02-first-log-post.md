@@ -7,7 +7,7 @@ tags: [website]
 
 ## Summary
 * Built a daily logging section on the website for quick-fire updates. 
-* Read Mastering the game of Go with deep neural networks and tree search (Silver 2016).
+* Read Mastering the game of Go with deep neural networks and tree search (Silver et. al. 2016).
 
 ## Remarks
 1. I think that the website architecture is now sufficient. I probably won't be making as many updates to the webpage with the same level of frequency as before: the foundations are here now, so any further changes will be sporadic based on need and whether I have any free time (which I likely won't).
