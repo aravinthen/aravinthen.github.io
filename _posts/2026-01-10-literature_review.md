@@ -3,14 +3,13 @@ title: Literature review - Week 1
 category: literature
 ---
 # Literature review - Week 1
-
-It ain't much but it's a start.
+It ain't much but it's a start!
 ### Papers
 * Mastering the game of Go with deep neural networks and tree search - Silver et. al. 2016
 * Graph networks as learnable physics engines for inference and control - Sanchez-Gonzales et. al. 2018
-* [Debugging RL, Without the Agonizing Pain](https://andyljones.com/posts/rl-debugging.html?utm_source=chatgpt.com) - Andy Jones
   
 ### Blog posts   
+* [Debugging RL, Without the Agonizing Pain](https://andyljones.com/posts/rl-debugging.html?utm_source=chatgpt.com) - Andy Jones
 
 ## Mastering the game of Go with deep neural networks and tree search - Silver et. al. 2016  
 Bonafide classic. The results of this paper changed my life! It's nice to finally read it as a serious academic endeavour.
