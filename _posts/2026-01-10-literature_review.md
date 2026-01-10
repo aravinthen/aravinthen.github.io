@@ -3,7 +3,7 @@ title: "Literature review - Week 1 "
 category: literature
 ---
 
-# Papers read
+### Papers read
 * Mastering the game of Go with deep neural networks and tree search - Silver et. al. 2016
 * Graph networks as learnable physics engines for inference and control - Sanchez-Gonzales et. al. 2018
 
