@@ -1,13 +1,18 @@
 ---
-title: "Literature review - Week 1 "
+title: Literature review - Week 1 
 category: literature
 ---
+# Literature review - Week 1
 
-### Papers read
+It ain't much but it's a start.
+### Papers
 * Mastering the game of Go with deep neural networks and tree search - Silver et. al. 2016
 * Graph networks as learnable physics engines for inference and control - Sanchez-Gonzales et. al. 2018
+* [Debugging RL, Without the Agonizing Pain](https://andyljones.com/posts/rl-debugging.html?utm_source=chatgpt.com) - Andy Jones
+  
+### Blog posts   
 
-# Mastering the game of Go with deep neural networks and tree search - Silver et. al. 2016  
+## Mastering the game of Go with deep neural networks and tree search - Silver et. al. 2016  
 Bonafide classic. The results of this paper changed my life! It's nice to finally read it as a serious academic endeavour.
 
 It's also exceptionally readable, so I'm not going to analythe results in depth. Some remarks:
@@ -18,7 +23,7 @@ It's also exceptionally readable, so I'm not going to analythe results in depth.
 
 All in all, good legacy reading.
 
-# Graph networks as learnable physics engines for inference and control - Sanchez-Gonzales et. al. 2018
+## Graph networks as learnable physics engines for inference and control - Sanchez-Gonzales et. al. 2018
 Graph neural networks are *advanced* architectures. They're a means of implementing inductive biases in to deep learning models, something that can dramatically improve performance in a number of tasks (prediction and inference, as well as subsequent control).
 
 By partitioning a system in objects and their relations, the problem simplifies: instead of building massive models that treat every component of the system as an individual block, you define general models for
@@ -49,7 +54,7 @@ Interesting features:
 * The static and dynamic properties are represented as different graphs. This is interesting to me: in a sense, this is a very natural distinction to make. Looking back on state spaces in physics: positions and velocities are completely independent coordinates of each other. 
 * What I found *really* interesting was that GN models were capable of zero-shot generalization... to a point. As you scale the system to a larger size the performance begins to degrade. I feel like the cause of this has to be due to new properties that emerge as a consequence of *system size*. **How the hell do you fix something like that? How do you account for the complexities that emerge at scale?**.
 
-# [Debugging RL, Without the Agonizing Pain](https://andyljones.com/posts/rl-debugging.html?utm_source=chatgpt.com) - Andy Jones
+## [Debugging RL, Without the Agonizing Pain](https://andyljones.com/posts/rl-debugging.html?utm_source=chatgpt.com) - Andy Jones
 A collection of useful advice for people trying to debug reinforcement learning systems. In summary,
 * RL is really hard in general - expecting magic is a surefire way to disappoint yourself.
 * The primary source of difficulty lies in the fact that errors aren't local: everything messes up at once, which in turn makes it hard to locate exactly what is causing who to screw up.
