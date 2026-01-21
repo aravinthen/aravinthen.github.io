@@ -224,3 +224,16 @@ pre {
 .tag {
   margin-right: 0.5rem;
 }
+
+/* MathJax dark mode */
+mjx-container {
+  color: var(--fg);
+}
+
+mjx-container[jax="CHTML"] {
+  font-size: 1em;
+}
+
+mjx-container {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

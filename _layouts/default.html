@@ -31,5 +31,10 @@
     {{ content }}
 
   </main>
+  
+  {% if page.math %}
+  {% include mathjax.html %}
+  {% endif %}
+  
 </body>
 </html>
