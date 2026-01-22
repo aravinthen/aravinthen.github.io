@@ -234,6 +234,10 @@ mjx-container[jax="CHTML"] {
   font-size: 1em;
 }
 
+mjx-container[display="true"] {
+  text-align: left !important;
+}
+
 mjx-container {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
