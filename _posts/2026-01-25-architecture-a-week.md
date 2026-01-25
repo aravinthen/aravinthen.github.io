@@ -1,5 +1,5 @@
 ---
-title: "Architecture implementation"
+title: Architecture implementation
 category: projects
 ---
 
