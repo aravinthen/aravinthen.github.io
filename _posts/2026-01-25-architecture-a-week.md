@@ -1,8 +1,12 @@
 ---
-title: Architecture implementation
+title: Architecture Implementations
 category: projects
 ---
 
+## Architectures
+1. Transformer
+
+## Motivation
 Having committed to mastering deep learning, I quickly realised that randomly following courses and proscribed pathways didn't really work for me. You can solve a course exercise a million times and still not *truly* get it - what really makes content stick is **pain**.
 Reimplementing papers is a painful process: I know this from experience. I spent six months trying to reimplement a paper during graduate school, only to realise that the method described in the paper didn't work for the problem I wanted it to solve.
 
@@ -12,5 +16,3 @@ It's time to actively engage with deep learning as an engineering task. To achie
 
 The main repository for this project can be found [here](https://github.com/aravinthen/architecture-weekly). 
 
-## Architectures
-1. Transformers
