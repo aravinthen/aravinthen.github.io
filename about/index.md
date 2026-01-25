@@ -12,7 +12,7 @@ I was a computational physicist in a previous life. I completed my PhD with the 
 ## Contact
 
 - **Email:** arre0raj@gmail.com
-- **GitHub:** https://github.com/aravinthen
-- **Twitter/X:** https://x.com/aravinthen0
+- **GitHub**: [https://github.com/aravinthen](https://github.com/aravinthen)
+- **Twitter/X:** [https://x.com/aravinthen0](https://x.com/aravinthen0)
 
 Feel free to reach out if something here is useful or interesting!
