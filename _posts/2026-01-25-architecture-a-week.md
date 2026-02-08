@@ -4,7 +4,7 @@ category: projects
 ---
 
 ## Architectures
-1. Transformer
+1. [Transformer](https://github.com/aravinthen/architecture-weekly/blob/main/transformer.py)
 
 ## Motivation
 Having committed to mastering deep learning, I quickly realised that randomly following courses and proscribed pathways didn't really work for me. You can solve a course exercise a million times and still not *truly* get it - what really makes content stick is **pain**.
