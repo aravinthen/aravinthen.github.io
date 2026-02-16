@@ -33,7 +33,7 @@ Overall, this is a very good starting point into RL. I think that `Stablebaselin
 `RLlib` comes across as quite a complex library, *but not for RL*. The problem that `RLlib` tries to solve is that of *distribution*. 
 This can can be seen in the basic structure of how `RLlib` algorithms are used within the software. I mentioned during my first pass of the paper that there's a difference in the actor and the learner within `RLlib` - this is an encouraging sign for complex deep learning architectures. However, I do note that there are quite a few algorithmic dependencies throughout the full framework. The software is by no means fully modular - as we'll find out in the next paper, an entirely new data structure had to be developed to handle this kind of modularity.
 
-What is most apparent throughout even the writing of the paper is the level of detail that has gone into studying the parallelism by which reinforcement learning can be distributed. The `RLLib` paper is really in the field of distributed systems over reinforcement learning. I had a look at `RLlib` and saw that there is a massive library of ready-made RL algorithms available. 
+What is most apparent throughout even the writing of the paper is the level of detail that has gone into studying the parallelism by which reinforcement learning can be distributed. The `RLLib` paper is really in the field of distributed systems over reinforcement learning - by extension, `RLlib` is a framework for *distributed systems* with an RL flavour rather than a bespoke reinforcement learning library. I had a look at `RLlib` and saw that there is a large library of ready-made RL algorithms available: in a sense, it's quite high level. 
 
 As a result, it looks like `RLlib` is worth using for cases where heavy distribution is necessary to carry out advanced RL training loops. The place this library holds in the armory is one where the truly *massive* problems are to be handled - ginormous deep learning architectures, huge numbers of CPUs/GPUs, the like. It may be a while before I get to use this  library - I fear I haven't yet reached the understanding of distributed systems necessary to even utilize it yet. 
 
@@ -54,7 +54,7 @@ Of course, one of the huge strengths of the `TorchRL` comes from the interoperab
 I think the basic workflow here that is emerging in my mind is
 1. Use `Stablebaselines3` to try out an environment and attempt to maximise a reward based on the facilities provided by the gold-standard algorithms provided by the software. 
 2. Build any algorithms from scratch using pure `PyTorch` in order to truly understand what the algorithm is actually doing and provide some level of direction into what can potentially be enhanced with modern functionalities. 
-3. Move over to `TorchRL` to really tweak the architectures and algorithm parameters in a way where I don't have to worry about any performance issues. 
+3. Move over to `TorchRL` to serve as a conceptual research-level framework for RL algorithm development. 
 4. If scaling is assessed to be beneficial, move to `Ray` and `RLlib`. Distribute the problem, solve with high compute and assess whether performance improvements can been observed. 
 
 My work for the next few weeks will be to test this generic framework and make adjustments when necessary.
