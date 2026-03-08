@@ -1,5 +1,5 @@
 ---
-title: Literature review - Week 8
+title: Literature review 8 - Actor-Critic 
 category: literature
 ---
 # Literature review - Week 8

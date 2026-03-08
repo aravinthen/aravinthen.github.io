@@ -1,5 +1,5 @@
 ---
-title: Literature review - Week 5
+title: Literature review 5 - Further on the path of GNNs
 category: literature
 ---
 # Literature review - Week 5
