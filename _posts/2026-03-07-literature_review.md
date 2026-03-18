@@ -2,7 +2,7 @@
 title: Literature review 9 - The flight to PPO
 category: literature
 ---
-# Literature review - Week 8
+# Literature review - Week 9
 This entire literature review was written during a flight from London to Mumbai. My basic goal for this flight was to work through every paper necessary to understand *proximal policy optimization*. I have nothing but time and as far as my battery permits (which, being on a five year old iPad, is a bit shit), I'll be working throughout. Let's get on with it!
 
 Also, this flight doesn't have wifi. Let this be proof that all of the writing that I do on this website is my own and not AI. Granted, anybody who has read a few of my posts will probably discount AI involvement just from the number of spelling mistakes!
@@ -43,7 +43,7 @@ A quick recap of overestimation. This is a phenomenon that takes place in noisy 
 
 There's an analogy here. You're a pirate and someone has told you that there's an island of gold to the west. As a result, you go to the West to where this purported island can be found. Your action space is to select an island to said to next - and one day, as you happen upon one island, your telescope glints in *just* the right way as to make the island you're looking at appear to be made of gold. You thus spend many years attempting to find gold on the island, which is in reality a rock with a few weeds growing on it. 
 
-What would help avoid this situation, though? *Another pirate next to you*. "Cap'n", says the other pirate, "thar be no gold on that island. That's a rock with a few weeks on it". Now, as the captain (and the action-setting policy), you might not believe him at first. Chances are however you'll believe him later and, as a result, save many years of your life upon this search. This is essentially what the solution to the problem that double Q-learning presents: you have another network that is used as your assessment and you disentangle the network used to deciding the action with the network used to adjust your value function. 
+What would help avoid this situation, though? *Another pirate next to you*. "Cap'n", says the other pirate, "thar be no gold on that island. That's a rock with a few weeds on it". Now, as the captain (and the action-setting policy), you might not believe him at first. Chances are however you'll believe him later and, as a result, save many years of your life upon this search. This is essentially what the solution to the problem that double Q-learning presents: you have another network that is used as your assessment and you disentangle the network used to deciding the action with the network used to adjust your value function. 
 
 It really should be noted (by me, at the very least - readers might have realised this before) that overestimation and overoptimism are *not the same*. Overestimation is where you are optimistic *after* your update. If you're simply optimistic at the very beginning of your training, you could potentially have a better time exploring your action space. 
 
@@ -81,7 +81,7 @@ There's an interesting note in the conclusion: "As with most reinforcement learn
 We're at 18%. This is not looking so promising...
 
 ## Asynchronous Methods for Deep Reinforcement Learning - Mnih et al. 
-This is an implementation paper over a theory paper, but it is very much an enabling fucntion for developing a broader class of reinforcement learning techniques.
+This is an implementation paper over a theory paper, but it is very much an enabling function for developing a broader class of reinforcement learning techniques.
 The main victim of this paper is the oft-mentioned replay buffer that has shown up in all of the promising examples of deep reinforcement learning so far. However, the paper describes some issues with experience replay techniques: 
 * they use more memory and computation per real interaction and
 * they are essentially fixed to off-policy learning algorithms.
