@@ -1,8 +1,9 @@
 ---
-title: Literature review 9 - Landing on PPO
+title: Literature review 10 - Landing on PPO
 category: literature
+math: True
 ---
-# Literature review - Week 9
+# Literature review - Week 10
 This entire literature review was written during a flight from Delhi to London Heathrow. I wasn't really trying to be ambitious here: as of writing, I'm at a point where I ought to be able to understand the content of the *Proximal Policy Optimization* paper. However, given that I have about 8 hours of time to kill I think I'm going to add a section here that summarises *all* of the ideas that make this exceptionally important technique work. 
 
 ## Prerequisite ideas
