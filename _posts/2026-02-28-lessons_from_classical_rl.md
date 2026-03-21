@@ -28,3 +28,18 @@ Mathematically, you define a Markov decision process as a tuple of
 Implementing a Markov decision process was an exercise in formalism for me. I spent a few days messing about with a highly explicit dictionary representation that was meant to enforce usability. I quickly realised however that *this is not a good way of going about these kinds of things*. The most simple (and usable) something can be is when it is represented in mathematical formalism. Departing from formalism is to add complexity, so to "engineer" simplicity is in fact a paradox.
 
 I stripped back my implementation to represent $$P$$ and $$R$$ entirely in terms of tensors, each constructed from a set of basic parameters (the number of non-terminal states, the number of terminal states and the number of actions). I then built these objects into a class that closely followed the `gym` format. The results can be seen [here](https://github.com/aravinthen/deep_rl_experiments/blob/main/utils/markov_decision_process.py).
+
+## Value iteration
+Value iteration is an approach to directly solving for the optimal value function. The update rule for value iteration is as follows:
+$$ V_{k+1}(s) = \max_{a}\sum_{s'} P(s, a, s')\left[ R(s, a, s') + \gamma V_k (s')\right] $$
+The method repeatedly updates the value of a state by taking the maximum expected value over all available actions, which means that it doesn't actually require the use of a policy. Instead, once the value function has converged appropriately, we can generate a policy by being greedy with respect to the provided value function. The problem depends entirely on having an accurate model $$P$$, but this is rarely if ever available for even idealised reinforcement learning environments. 
+
+Implementing value iteration was probably my first lightbulb moment in how `numpy` and `torch` ought to be used. The value function update as provided in Sutton and Barto loops over states and actions, but I realised that the full calculation can be vectorized in a single line using `np.sum` and `np.max`. Some array tricks were required: the value function itself is one-dimensional, so adding the 3D reward tensor required the padding of the value function with `None` indices.
+
+## Policy iteration
+Policy iteration starts with a policy, evaluates the value function according to it and then improves the policy until the policy stabilizes between iterations.
+The algorithm is composed of two stages:
+    * The first is policy evaluation, where the value function associated to a particular policy is calculated. This is carried out in a similar way to value iteration, only with the added caveat that we no longer need to sum over all actions: the actions are supplied by the policy itself. This step did require a bit of thought on how to broadcast this effectively. I eventually settled on calculating $$P(s,s')$$ and $$R(s, s')$$ explicitly.
+    * The second is policy improvement, which is just calculating the actions that are greedy with respect to a given state.
+
+Both algorithms can be found [here](https://github.com/aravinthen/deep_rl_experiments/blob/main/algorithms/dp.py). The experiments I've run (which are admittedly very barebones) can be found [here](https://github.com/aravinthen/deep_rl_experiments/blob/main/experiments/dynamic_programming.py). As hoped, both algorithms provide almost exactly the same result when run for the same Markov decision process. 
