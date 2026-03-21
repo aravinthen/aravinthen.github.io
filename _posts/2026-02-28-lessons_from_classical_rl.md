@@ -1,6 +1,6 @@
 ---
 title: Lessons from Classical RL
-category: Technical notes
+category: technical
 ---
 
 As a physicist by training, I'm no stranger to having to go through the classical results of a discipline before reaching the fun stuff: students of physics must essentially master classical mechanics and electromagnetism before the weird stuff like quantum mechanics and general relativity can be truly appreciated. Some physicists (like myself) never really leave the classical side of the discipline: there are many beautiful results and outstanding questions in fields like soft matter physics and biophysics that scientists are still dedicating lives to resolving. 
