@@ -39,7 +39,9 @@ There are two basic approaches to dynamical programming: value iteration, which 
 
 ### Value iteration
 Value iteration is an approach to directly solving for the optimal value function. The update rule for value iteration is as follows:
+
 $$ V_{k+1}(s) = \max_{a}\sum_{s'} P(s, a, s')\left[ R(s, a, s') + \gamma V_k (s')\right] $$
+
 The method repeatedly updates the value of a state by taking the maximum expected value over all available actions, which means that it doesn't actually require the use of a policy. Instead, once the value function has converged appropriately, we can generate a policy by being greedy with respect to the provided value function. The problem depends entirely on having an accurate model $$P$$, but this is rarely if ever available for even idealised reinforcement learning environments. 
 
 Implementing value iteration was probably my first lightbulb moment in how `numpy` and `torch` ought to be used. The value function update as provided in Sutton and Barto loops over states and actions, but I realised that the full calculation can be vectorized in a single line using `np.sum` and `np.max`. Some array tricks were required: the value function itself is one-dimensional, so adding the 3D reward tensor required the padding of the value function with `None` indices.
@@ -127,6 +129,6 @@ With great anticipation I ran my comparison script and got
 
 ![this](/_images/what_the_hell.png)
 
-
+This is, obviously, not good. The algorithms don't seem to be learning much at all. I mean, the learning trajectories are basically just noisy straight lines. What the hell?
 
 ## Conclusion
