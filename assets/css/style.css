@@ -241,3 +241,8 @@ mjx-container[display="true"] {
 mjx-container {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
+
+img {
+  max-width: 100%;
+  height: auto;
+}

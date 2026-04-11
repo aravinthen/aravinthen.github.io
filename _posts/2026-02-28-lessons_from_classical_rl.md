@@ -140,12 +140,12 @@ Luckily, most environments don't suck. Most environments of interest are consist
 
 My next step was to build an environment that I knew would work, as it was literally the textbook example: gridworld. I was able to build gridworld without any fuss, as the `MDP` class I developed was pretty easy to extend. Within a single evening,
 
-![gridworld][/images/working_algorithms.png]
+![gridworld](/images/working_algorithms.png)
 
 Much, much better. Much better! That looks really good! However, why does double Q-learning look so bad? 
 As it happens, gridworld is fully deterministic... and double Q-learning is meant to work in situations where the environment is so noisy that overestimates are abound. Adding a few sources of noise the environment, like a slip probability and a high reward noise... that should do something, right?
 
-![doubleq][/images/doubleq_victory.png]
+![doubleq](/images/doubleq_victory.png)
 
 I'm happy with that. That's a success in my books. As can be seen, the robustness of double Q-learning is on full display: at later stages of the experiments, as Q-learning and `SARSA` are ravaged by high-noise and variance, double Q-learning has low variance and is lovely and stable.
 
