@@ -127,7 +127,7 @@ And so, it was time to test. Everything seemed to work alright in single runs, b
 ### Results 
 With great anticipation I ran my comparison script and got
 
-![this](/_images/what_the_hell.png)
+![this](/images/what_the_hell.png)
 
 This is, obviously, not good. The algorithms don't seem to be learning much at all. I mean, the learning trajectories are basically just noisy straight lines. What the hell?
 
