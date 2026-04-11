@@ -125,7 +125,7 @@ And so, it was time to test. Everything seemed to work alright in single runs, b
 ### Results 
 With great anticipation I ran my comparison script and got
 
-![this](_images/what_the_hell.png)
+![this](/_images/what_the_hell.png)
 
 
 
