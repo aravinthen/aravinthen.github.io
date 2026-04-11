@@ -127,8 +127,36 @@ And so, it was time to test. Everything seemed to work alright in single runs, b
 ### Results 
 With great anticipation I ran my comparison script and got
 
-![this](/images/what_the_hell.png)
+![crappy](/images/what_the_hell.png)
 
 This is, obviously, not good. The algorithms don't seem to be learning much at all. I mean, the learning trajectories are basically just noisy straight lines. What the hell?
 
+This isn't an algorithm implementation issue, as all of the algorithms were messing up. Remember how I mentioned that my previous MDP was extremely lazily written?
+Just to summarise, that MDP was extremely noisy, with every action have a probability of sending the agent to any other state. Likewise, the reward signal was noisy. This brought me to my first practical realisation regarding reinforcement learning as a technique: *it isn't a magic bullet*. You cannot just chuck RL at any old environment and expect it to do anything at all. Classical RL, at the very least, *does not operate nicely in systems that are thoroughly dominated by noise, even if an optimal path probably exists within the software*.
+
+It seems obvious now and it probably seems quite intuitive to most readers, but I found it quite illuminating as to the scope of what RL can do. Further, it impressed on me the fact that environments are everything in RL. If three different methods, each with their own strengths, fall apart completely in a single environment then the only lesson to learn from this is that if your environment is not consistent, then RL cannot help you.
+
+Luckily, most environments don't suck. Most environments of interest are consistent by virtue of the fact that people are interested in operating within in the first place. 
+
+My next step was to build an environment that I knew would work, as it was literally the textbook example: gridworld. I was able to build gridworld without any fuss, as the `MDP` class I developed was pretty easy to extend. Within a single evening,
+
+![gridworld][/images/working_algorithms.png]
+
+Much, much better. Much better! That looks really good! However, why does double Q-learning look so bad? 
+As it happens, gridworld is fully deterministic... and double Q-learning is meant to work in situations where the environment is so noisy that overestimates are abound. Adding a few sources of noise the environment, like a slip probability and a high reward noise... that should do something, right?
+
+![doubleq][/images/doubleq_victory.png]
+
+I'm happy with that. That's a success in my books. As can be seen, the robustness of double Q-learning is on full display: at later stages of the experiments, as Q-learning and `SARSA` are ravaged by high-noise and variance, double Q-learning has low variance and is lovely and stable.
+
+And so, my journey of classical reinforcement learning came to a close. This is by no means an exhaustive analysis of the classical results in the field and my literature reviews told me that even the classical results could surface unexpectedly during deep RL research. I did not, however, feel inclined to stay in the classical period of this field for too much longer.
+
 ## Conclusion
+Was this a useful process? Would I have benefited if I had just jumped into deep reinforcement learning imlementations and left the classical stuff whenever I needed it?
+
+Keeping in mind that my biggest problem throughout this project *wasn't even the algorithm*, I'd say that the lessons that I learned here were absolutely *essential* to my development as an RL practitioner as a whole. The algorithms that I implemented  were actually not that complicated at all! The real lessons from classical RL are the following
+* **The environment is key**. Algorithms are equally useless if your environment poses solutions that are marginally better than non-solutions. I think this is really the most important finding that I've obtained from my work in this note. I am *very* glad that I got to experience this through the simpler environment of classical reinforcement learning. 
+* **Algorithms are merely representations of problem-solving philosophies**. Do you want a safe solution, a fast solution or a solution that is robust against being fooled? This is what is built into the algorithm. There is no special magic to a reinforcement algorithm and you won't get something that will immediately solve your problem, but you can control how that solution is found and the character of that solution.
+* Reinforcement learning as a whole has a very simple theoretical structure. You have your environments and you have your algorithms and it is absolutely possible to structure them in a way that they are interchangeable, because they are all trying to do the same thing. This has *real* ramifications on the implementation side, at the very least when you don't have to worry about distributed architectures and training agents on different devices. 
+
+Farewell to classical reinforcement learning. Time to go **deep**.
