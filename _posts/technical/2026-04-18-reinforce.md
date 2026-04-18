@@ -1,5 +1,5 @@
 ---
-title: REINFORCE: From theory to implementation
+title: "REINFORCE: From theory to implementation"
 category: technical
 math: True
 ---
