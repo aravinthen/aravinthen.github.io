@@ -1,5 +1,5 @@
 ---
-title: Literature review 12 - Experience as a resource
+title: 12. Experience as a resource
 category: literature
 math: True
 ---

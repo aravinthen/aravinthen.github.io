@@ -1,5 +1,5 @@
 ---
-title: Literature review 6 - The power of GNNs + the RL ecosystem
+title: 6. The power of GNNs + the RL ecosystem
 category: literature
 ---
 # Literature review - Week 6

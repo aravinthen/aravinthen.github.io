@@ -1,5 +1,5 @@
 ---
-title: Literature review 4 - A light week + A start to GNNs
+title: 4. A light week + A start to GNNs
 category: literature
 ---
 # Literature review - Week 4

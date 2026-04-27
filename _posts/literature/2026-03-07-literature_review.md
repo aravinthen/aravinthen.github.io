@@ -1,5 +1,5 @@
 ---
-title: Literature review 9 - The flight to PPO
+title: 9. The flight to PPO
 category: literature
 ---
 # Literature review - Week 9

@@ -1,5 +1,5 @@
 ---
-title: Literature review 11 - Advanced actor-critic methods
+title: 11. Advanced actor-critic methods
 category: literature
 math: True
 ---
