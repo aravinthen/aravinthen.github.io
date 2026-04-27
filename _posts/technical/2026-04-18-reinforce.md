@@ -40,7 +40,7 @@ $$
 This is what is known as a policy gradient algorithm and makes up foundation of the bulk of the RL techniques that are used heavily in the modern day.
 
 ### The policy gradient theorem
-It's all well and good have an expression that makes use of the performance measure gradient. How do you actually compute the gradient?
+It's all well and good have an expression that makes use of the performance measure gradient. How do you actually compute the gradient or a performance measure?
 First, let's define the performance objective. For now, we need a simple measure of performance that can be optimized in the first place. Why not start with... the value function, which I just said doesn't have to be used?
 
 Aside: whilst you can use anything as your performance measure, the value function is essentially the foundation of improvement and is still used in effectively every possible performance measure. It just isn't the main objective anymore.
@@ -51,25 +51,120 @@ $$
 J(\theta) = V^{\pi_{\theta}}(s_0),
 $$
 
-which is just the value of the starting state. It's worth nothing that we don't need the exact gradient, which anyhow is impossible: we simply need an expression that is proportional to the gradient as the difference is absorbed by $$\alpha$$ anyway. Such an expression for the gradient is given by the *policy gradient theorem*, which is one of the most important results of reinforcement learning as a whole.
+which is just the value of the starting state. It's worth nothing that we don't need the exact gradient, which anyhow is impossible for anything that is too complex to be presented as a table: we simply need an expression that is proportional to the gradient as the difference is absorbed by $$\alpha$$ anyway. Such an expression for the gradient is given by the *policy gradient theorem*, which is one of the most important results of reinforcement learning as a whole.
 
 Following Sutton and Barto, we prove the policy gradient theorem from first principles. Writing the state value in terms of the action-value,
 
 $$
-\begin{align}
+\begin{align*}
 \nabla v_{\pi}(s) 
 &= \nabla \left[ \sum_a \pi(a \vert s) q_\pi(s, a)\right] \forall s \in \mathcal{S} \\
-&= \sum_a \left[ \nabla \pi \quad q_\pi + \pi \nabla q_\pi \right] \\
-&= \sum_a \left[ \nabla \pi \quad q_\pi + \pi \nabla \left[p(s', r \vert s, a) (r + v_\pi (s')\right] \right] \\
-\end{align}
+&= \sum_a \left[ \nabla \pi \ q_\pi + \pi \nabla q_\pi \right] \\
+&= \sum_a \left[ \nabla \pi \ q_\pi + \pi \nabla \left[p(s', r \vert s, a) (r + v_\pi (s')\right] \right] \\
+\end{align*}
 $$
 
+There are a few important substitutions taking place here. The first is the product rule in the second step, followed by the substitution of the Bellman equation in the following line. Note also that the reward drops due to the fact that the gradient of the reward is zero. At this point, it's clear to see that you can repeat the step of Bellman equation substitution until whenever you like. This is called *unrolling* and is a common strategy in proving general trajectory features - it's also seen in the policy improvement theorem that underlies most of classical value-function based reinforcement learning. 
 
+Moving on, if we unroll the policy for infinite timesteps, we'll get
 
+$$
+\nabla v_{\pi}(s) = \sum_{x \in \mathcal{S}} \sum_{k=0}^\infty \text{Pr}(s \rightarrow x, k, \pi) \sum_a \nabla \pi(a \vert x) q_\pi(x,a).
+$$
 
+I saw this expression in Sutton and Barto and my immediate reaction was "...**huh?**". In fact, the only reason that I now understand what's going on here is because I remember seeing and interpreting the idea of "visitation count" in the trust policy region optimization paper. In any case, to explain, I'm going to simplfy the derivation by abstracting away the reference to the sum of the gradients,
+
+$$
+g(s) = \sum_a \nabla \pi(a \vert s) q_\pi(s,a).
+$$
+
+With this, we can represent the value gradient as
+
+$$
+\nabla v_\pi(s) = g(s) + \sum_{s'} P(s \rightarrow s') \nabla v_\pi (s').
+$$
+
+We can do this because the reward and the actions are essentially factored out by including them within the definition of $g$. If we carry out the unrolling process now, we'll get something that looks like
+
+$$ 
+\begin{align*}
+\nabla v_\pi(s) &= g(s) + \sum_{s'} P(s \rightarrow s') \left[ g(s') + \sum_{s''} P(s' /rightarrow s'') \nabla V_{\pi} (s'') \right] \\
+&= g(s) + \sum_{s'} \left[ P(s \rightarrow s')  g(s') + \sum_{s''} P(s \rightarrow s') P(s' /rightarrow s'') \nabla V_{\pi} (s'') \right] 
+\end{align*}
+$$
+
+This is a visitation measure: the total number of times you expect to visit a state across an entire episod. Each individual term in the unrolling (which has been carried to two steps above) is the probability of being in that state at that exact moment (so, two timesteps in).
+
+This can now be replaced with the shorthand $$\text{Pr}(s \rightarrow s')$$, and the apostrophes can be replaced by time indices. What we're really getting here is
+1. At $$t=0$$, the probability of being in state $$s_0$$ is 1. The weighting over $$g$$ is simply 1, as can be seen in the original expression.
+2. At $$t=1$$, the weighting over $$g(s_i)$$ for some state $$s_i$$ is $$\text{Pr}(s_0 \rightarrow s_i)$$. 
+3. So on.
+
+Sub in $$g(s)$$ and you have the original expression for $$\nabla v_\pi(s)$$. This expression is really just the gradient of $$v$$ represented as a sum over all states in the future. 
+The quantity $$\sum_k^\infty \text{Pr}(s_0 \rightarrow x)$$ can be interpreted as the expected number of timesteps spent in $$s$$ during a single episode - you can verify this by assuming that given a hundred timesteps and a generic hitting probability of 0.3 for some state $$s$$, you'd expect to hit that state thirty times. Essentially, the quantity tells yo uhow much weight a state ought to have in the gradient update based on the total expected occupancy. 
+
+Substituting $$\eta(s) =\sum_k^\infty \text{Pr}(s_0 \rightarrow x)$$ and switching to the initial defintion of our performance measure $$J$$, we get
+
+$$
+\begin{align*}
+\nabla J(\mathbf{\theta}) &= \sum_{s \in \mathcal{S}} \eta(s) \sum_a \nabla \pi(a \vert s) q_\pi(s,a) \\
+&= \sum_{s'} \eta(s') \sum_s \frac{\eta(s)}{\sum_{s'} \eta{s'}} \sum_a \nabla \pi(a \vert s) q_\pi(s,a) \\
+&= \sum_{s'} \eta(s') \sum_s \mu(s) \sum_a \nabla \pi(a \vert s) q_\pi(s,a) \\
+\end{align*}
+$$
+
+These steps shift from considering the visitation counts to representing a full probability distribution over the visited states: this is called the on-policy distribution and essentially weights the localized gradient updates by how often they are visited by the policy overall.
+
+Now, the issue here is the calculation of $$\sum_{s'} \eta(s')$$. As mentioned, this is the expected number of total time steps spent in all states during a single episode. Does this mean that in order to even use this expression, you have to *finish an episode*? That's not useful! The trick here is to remove the hard condition of equality and work with proportionality instead. As a result, you get 
+
+$$
+\nabla J(\mathbf{\theta}) \propto \sum_s \mu(s) \sum_a \nabla \pi(a \vert x) q_\pi(x,a)
+$$
+
+If $$\mu(s)$$ is a probability distribution of states and we're summing over the states, then that means that the above is an **expectation**. 
+
+$$
+\nabla J(\mathbf{\theta}) \propto \mathbb{E}_{\pi} \left[ \sum_a \nabla \pi(a \vert x) q_\pi(x,a) \right]
+$$
+
+Through this, we have a mathematically rigorous way to directly optimize a policy performance without requiring any knowledge of the environment's internal dynamics. It took me a while to realise the raw power of this result, but in a single sentence: it allows you to take meaningful derivatives of agent performance without differentiating through a state distribution (in model free settings). 
 
 
 ### Deriving REINFORCE
+As can be seen from the expression of the performance measure gradient, all we need to do in order to update our policy parameters is to increment them in a way that 
+$$
+\theta_{t+1} = \theta_{t} + \alpha \left[ \sum_a \nabla \pi(a \vert x) q_\pi(x,a) \right].
+$$
+That is, we just need to be able to estimate an expected value. As mentioned in Sutton and Barto, you can just use this in order to generate a valid policy gradient rule: just update according to a single realisation of $$\sum_a \nabla \pi(a \vert x) q_\pi(x,a)$$ and be done with it. I get the impression that this is quite messy.
+
+On a basic level, the raw policy gradient theorem requies you to calculate the actual gradient of the policy. We'd rather not calculate hard derivatives at all, so one way of simplifying the expression is operate over expected value and simply *sample* what we need. We can inject the probability distribution into the main expression for the parameter update by simply multiplying by unity,
+
+$$
+\nabla J(\theta) \propto \mathbb{E} \left[ \sum_a \pi (a \vert S_t, \theta) q_\pi (S_t, a) \frac{\nabla \pi (a \vert S_t, \theta)}{\pi(a \vert S_t, \theta)}\right]
+$$
+
+Following the mathematics and applying the famous *log derivative* trick, we get
+
+$$
+\nabla J(\theta) \propto \mathbb{E} \left[ G_t \log \nabla \pi(A_t \vert S_t, \theta) \right] 
+$$
+
+A bit of explanation here:
+1. $$A_t$$ is the replacement of the sum over actions with a single sample action from the policy. 
+2. $$G_t$$ comes from the fact that $$\mathbb{E}_\pi[G_t \vert S_t, A_t]$$ is nothing more than the definition of the value function. 
+
+The final rule, and the rule that we'll be using to carry out `REINFORCE`, is
+
+$$
+\theta_{t+1} = \theta_t + \alpha G_t \nabla \log \pi(A_t \vert S_t, \theta_t)
+$$
+
+One outstanding question remains. How on earth do we calculate the gradient of the log probability?
+Well, the answer to this is two-fold:
+1. If you're using standard functional representations of a parameterized policy, then you... simply differentiate it.
+2. If you're using a neural network, then you forget about it and let backpropagation in PyTorch do the job for you. :)
+
+And so, we come to the first of a policy gradient techniques. Now it's time to test how it works!
 
 ## Experiments
 ### Results
