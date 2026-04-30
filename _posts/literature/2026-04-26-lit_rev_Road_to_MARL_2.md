@@ -43,7 +43,7 @@ My first source in getting my head around the topic of regret minimisation was a
 The goal of this problem isn't to simply minimize loss: that is impossible, as there is still a learning process that must be undertaken. The goal is to *minimize regret*, but in a way that is **independent of the stochastic process underlying the sequence**. This last bit is really important: it even encompasses adversarial behaviour that adapts to the predictions that you make. Another way of framing regret is as difference between the total loss of the best expert as well as the total loss of the learner,
 
 $$
-\text{Regret } = \max_{\text{expert}} (L_{\text{learner} - L_{\text{expert})
+\text{Regret } = \max_{\text{expert}} (L_{\text{learner}} - L_{\text{expert}})
 $$
 
 Back to the target of the problem: we're trying to minimize regret, which is essentially the cumulative loss over multiple steps. This is a measure of the performance versus the best fixed action in hindsight.
