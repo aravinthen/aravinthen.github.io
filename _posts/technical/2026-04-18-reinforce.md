@@ -88,8 +88,8 @@ We can do this because the reward and the actions are essentially factored out b
 
 $$ 
 \begin{align*}
-\nabla v_\pi(s) &= g(s) + \sum_{s'} P(s \rightarrow s') \left[ g(s') + \sum_{s''} P(s' /rightarrow s'') \nabla V_{\pi} (s'') \right] \\
-&= g(s) + \sum_{s'} \left[ P(s \rightarrow s')  g(s') + \sum_{s''} P(s \rightarrow s') P(s' /rightarrow s'') \nabla V_{\pi} (s'') \right] 
+\nabla v_\pi(s) &= g(s) + \sum_{s'} P(s \rightarrow s') \left[ g(s') + \sum_{s''} P(s' \rightarrow s'') \nabla V_{\pi} (s'') \right] \\
+&= g(s) + \sum_{s'} \left[ P(s \rightarrow s')  g(s') + \sum_{s''} P(s \rightarrow s') P(s' \rightarrow s'') \nabla V_{\pi} (s'') \right] 
 \end{align*}
 $$
 
@@ -167,7 +167,43 @@ Well, the answer to this is two-fold:
 And so, we come to the first of a policy gradient techniques. Now it's time to test how it works!
 
 ## Experiments
+Find my implementation of `REINFORCE` [here](https://github.com/aravinthen/deep_rl_experiments/blob/main/algorithms/reinforce/vanilla.py).
+
+I'm working with a standard `gym` environment called `cartpole-v1`. This is a very simple game where your goal is to balance a stick upright by simply rolling it left and right. This is a simple game, but `REINFORCE` is a simple algorithm and one that typically doesn't actually work for most problems. My goal here is to iteratively improve `REINFORCE` so that it can successfully solve this simplest of problems.
+
+The network that I'm using - for the very first example - is incredibly simple: a single linear regressor. 
+
+```
+self.model = nn.Sequential(
+   	         nn.Linear(obs, action)
+	     )
+```
+An observation is passed to this network, which then provides a tensor representing the action space. This is then sampled from via `torch.distributions.Categorical` - the action probabilities are stored whenever they're calculated.
+
+I don't expect that anything will really happen here, but it'll at the very least give me some "low-hanging fruit" to pick off during my first investigations.
+
+The implementation follows a simple structure:
+* A `run_policy` function that simply samples the policy for a single episode, stores the reward trajectory in a class attribute and then returns the cumulative reward (although this last feature is mostly used for testing). 
+* An `update` function that   
+    1. Takes a stored reward trajectory (or generates one if there isn't one already) and iteratively apply the discount to build a returns list for the full trajectory,
+    2. Calculate the subsequent policy loss with respect to the `REINFORCE` update rule,
+    3. Ready the optimizer, sum the policy loss and update the parameters of the agent policy.
+    4. Reset storage.
+
+Simple enough. How does it do?
+
 ### Results
+My experiment, which can be found [here](https://github.com/aravinthen/deep_rl_experiments/blob/main/experiments/reinforce_soln.py), has the following structure:
+1. For a fixed set of ten seeds, I carry out a run of a hundred episodes.
+2. The episodic rewards are logged per timestep for each seed,
+3. I take the mean and standard deviation of the rewards over each seed for each timestep.
+4. I plot and get...
+
+![reinforce](/images/shitty_reinforce.png)
+
+Haha! That sucks! I expected nothing less. Let's fix up some low-hanging fruit and see how much we can push the simple `REINFORCE` algorithm.
+
+## Low-hanging fruit
 ## REINFORCE with a baseline
 ### Comparison
 ## Conclusion
