@@ -1,5 +1,5 @@
 ---
-title: Literature review 7 - Inductive biases
+title: 7. Inductive biases
 category: literature
 ---
 # Literature review - Week 7

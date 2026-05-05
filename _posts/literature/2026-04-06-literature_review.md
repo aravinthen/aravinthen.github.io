@@ -1,5 +1,5 @@
 ---
-title: Literature review 13 - Dreamer
+title: 13. Dreamer
 category: literature
 math: True
 ---

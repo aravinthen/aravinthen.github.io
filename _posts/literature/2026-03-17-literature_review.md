@@ -1,5 +1,5 @@
 ---
-title: Literature review 10 - Landing on PPO
+title: 10. Landing on PPO
 category: literature
 math: True
 ---

@@ -1,5 +1,5 @@
 ---
-title: Literature review 1 - A start
+title: 1. A start
 category: literature
 ---
 # Literature review - Week 1

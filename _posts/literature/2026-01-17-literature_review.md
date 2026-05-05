@@ -1,5 +1,5 @@
 ---
-title: Literature review 2 - Better RL + A start to sequence models 
+title: 2. Better RL + A start to sequence models 
 category: literature
 ---
 # Literature review - Week 2

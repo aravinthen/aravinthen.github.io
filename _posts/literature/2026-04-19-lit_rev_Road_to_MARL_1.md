@@ -1,5 +1,5 @@
 ---
-title: On Multi-agent Reinforcement Learning - Game-theoretic prerequisites
+title: 1. Multi-agent Reinforcement Learning - Game theory
 category: literature
 math: True
 ---

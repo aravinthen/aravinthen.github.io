@@ -1,5 +1,5 @@
 ---
-title: Literature review 3 - Attention and transformers
+title: 3. Attention and transformers
 category: literature
 ---
 # Literature review - Week 3
