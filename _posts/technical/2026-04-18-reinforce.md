@@ -204,6 +204,54 @@ My experiment, which can be found [here](https://github.com/aravinthen/deep_rl_e
 Haha! That sucks! I expected nothing less. Let's fix up some low-hanging fruit and see how much we can push the simple `REINFORCE` algorithm.
 
 ## Low-hanging fruit
+### Hidden layers
+The first thing we can do is add a hidden layer into our network. I'm going to add just one hidden layer for now, just for simplicity's sake. The results are as follows:
+
+![hiddens](/images/better_reinforce.png)
+
+Okay. That definitely has an effect. How much of an effect? It would be very, very disappointing if all I had to do was increase the number of layers...
+
+![morelayers](/images/big_layers.png)
+
+Much nicer, but the effect dies down after around 512 hidden units. Nice!
+
+### Normalized returns
+Our next change will consist of normalizing the rewards: a common step in reinforcement learning in general. The goal of this change is to stabilize training and ensure consistency in the optimization landscape: in general, normalized outputs make it easier to tune hyperparameters.
+
+We can normalize here with respect to the mean of the rewards like so:
+
+```
+returns = (returns - returns.mean()) / (returns.std() + 1e-8)
+```
+where the standard deviation is nudged to prevent blowup. The result can be seen as follows:
+
+![normreturn](/images/normalized_rewards.png)
+
+Very little difference - nothing to write home about, that's for sure.
+
+### Hyperparameter tuning
+A standard means of tuning neural networks is to simply tweak hyperparameters as a means of getting learning dynamics under control. What would happen if we changed the learning rate?
+
+My first instinct was to drop the learning rate to `1e-4`. This was... a disaster:
+
+![lrdrop](/images/lr_drop.png)
+
+As it happened, changing the learning rate also made larger networks less powerful. I dropped the network size and then carried out four runs to assess the joint effect of the learning rate and network size:
+
+![lrhike](/images/learning_rate_network_size.png)
+
+Very, very interesting. These experiments were run with a higher learning rate of `1e-2`: note the enormous variance in the rewards and the deep instability that emerges with a larger network!
+
+Just to fully explain the issues we're facing, observe the following graph:
+
+![lrhike](/images/systematic_loser.png)
+
+This is really instructive. What we're seeing here is
+* The algorithm actually learns how to balance in the short term.
+* Updates become very, very unstable as the episode length grows. Despite the fact that we do in fact get to a reasonably good score, we *don't* see a consistent score. In fact, all we see is enormous variance!
+
+The traditional solution to this problem is to tame the gradient updates with a baseline, so this will be our next step. I don't doubt that we could continue to squeeze out performance by tweaking hyperparameters and varying network sizes, but where's the fun in that?  
+
 ## REINFORCE with a baseline
 ### Comparison
 ## Conclusion
