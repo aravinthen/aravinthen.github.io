@@ -3,7 +3,7 @@ title: 2. Multi-agent Reinforcement Learning - Learning Dynamics
 category: literature
 math: True
 ---
-# Multi-agent Reinforcement Learning 1 - Learning Dynamics
+# Multi-agent Reinforcement Learning 2 - Learning Dynamics
 ## Preamble
 Last week, I spent much of my time thinking about the concept of equilibrium as an emergent consequence of rational players and well quantified consequences. I also spent a *lot* of time realising that the problem of multi-agent reinforcement learning is *anything but* rational and well quantified. It was very obvious that the basic premise of game theory - the emergence of a Nash equilibrium - doesn't really apply so much in situations where players are adapting whilst playing.
 
