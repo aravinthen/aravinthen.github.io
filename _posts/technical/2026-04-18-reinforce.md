@@ -1,10 +1,10 @@
 ---
-title: "REINFORCE: From theory to implementation"
+title: "From REINFORCE to Actor-Critic"
 category: technical
 math: True
 ---
 
-# REINFORCE: From theory to implementation
+# A War Story: from REINFORCE to Actor-Critic
 I've spent much of the last month slowly chipping away at understanding classical reinforcement learning algorithms, which you can read about here. My goal now is to make the transition to true deep reinforcement learning algorithms.
 The field of deep learning is concerned with the engineering of powerful function approximators (specifically, multi-layered neural networks) for analysis, pattern recognition and decision making. The core of these function approximators is a set of parameters that are typically tuned using an optimization procedure with respect to some target value. 
 
@@ -250,8 +250,72 @@ This is really instructive. What we're seeing here is
 * The algorithm actually learns how to balance in the short term.
 * Updates become very, very unstable as the episode length grows. Despite the fact that we do in fact get to a reasonably good score, we *don't* see a consistent score. In fact, all we see is enormous variance!
 
+After analysis, we can see the following:
+1. A higher learning rate improves the score, but this is a transient effect and prevents higher scores after what seems to be the use of temporary heuristics.
+2. A lower learning rate doesn't do anything: the score doesn't change at all.
+
+What this is telling me is that REINFORCE is getting trapped in a loss minima... but I wondered to myself: why is this not more explicit?
+
+I've been running all of my experiments for just a hunded episodes. I've been doing so because in other contexts, when I have to test an RL algorithm, 100 episodes is typically enough to at the very least get some reasonable learning in.
+
+The issue here is that REINFORCE is not a modern algorithm and my expectations of solving an environment using it are probably somewhat mismatched. Running for 500 episodes clearly demonstrates that maybe... I should have just run the algorithm for longer.
+
+![long_run](/images/long_run.png)
+
 The traditional solution to this problem is to tame the gradient updates with a baseline, so this will be our next step. I don't doubt that we could continue to squeeze out performance by tweaking hyperparameters and varying network sizes, but where's the fun in that?  
 
 ## REINFORCE with a baseline
+Sutton and Barto advocate for using another learned representation to represent the value function: this is a baseline, and is typically subtracted from the total reward in order to reduce variance in policy gradient methods. There are two basic reasons why this usually works:
+1. If all rewards are positive, subtracting a baseline value allows us to distinguish between actions worse than a baseline and actions better.
+2. Removing the baseline allows centering of gradient updates. This naturally reduces variance and is supposed to make learning much faster.
+
+The main difference here is in the update rule,
+
+$$
+\theta_{t+1} = \theta_t + \alpha (G_t - b(S_t) \nabla \log \pi(A_t \vert S_t, \theta_t)
+$$
+
+where the addition of a baseline $$b(S_t)$$ represents the baseline. 
+
+Does it, now? Let's implement REINFORCE with a baseline. I've implemented this as a child class of my original algorithm over [here](https://github.com/aravinthen/deep_rl_experiments/blob/main/algorithms/reinforce/baselines.py), although it required me to respecify the `run_policy()` and `update()` methods anyhow. 
+
 ### Comparison
-## Conclusion
+This is the performance of REINFORCE, both with and without a baseline.
+
+![comparison_bl](/images/comparison.png)
+
+The use of a learned baseline is, for the most part, more effective than without. I'm surprised at the variance, though: there's not *really* much of a reduction in variance. For the most part, the variance is actually *higher* with the baseline, although it ought to be remembered that the baseline value function approximator is learning the correct value *throughout* the training process. The learned value of the first step itself changes as the agent gets better, which is another occurance of a moving target. 
+
+## All the way to Actor-Critic 
+I was quite disappointed with REINFORCE with a baseline, so I went ahead and implemented the true Actor-Critic method from with PPO and other more advanced techniques spring forth. 
+
+The main difference between REINFORCE with a baseline and the Actor-Critic method is that the former is essentially a Monte-Carlo method, whereas the latter is a temporal difference method. In practice, this manifests as a slightly more complex update step, where the actor (policy) and the critic (value function) are updated simultaneously,
+
+$$
+\begin{align*}
+\theta_{t+1} &= \theta_t + \alpha \nabla \log \pi(A_t \vert S_t, \theta_t) \delta_t \\
+w_{t+1} &= r_{t+1} + \beta \nabla V(S_t) \delta_t
+\end{align*}
+$$
+
+The ubiquitous temporal difference error shows up as
+
+$$
+\delta_t = r_{t+1} + \gamma ( V(S_{t+1}) - V(S_t) ),
+$$
+
+and this is really the core of how things change. It ought to be noted that, as usual, the critic update is conducted via stochastic gradient descent: this makes it very simple to include via `PyTorch` (as implemented [here](https://github.com/aravinthen/deep_rl_experiments/blob/main/algorithms/reinforce/actor_critic.py)). In general, the basic class structure of the policy gradient method lends really nicely to such extensions, so it barely took an hour to get the following result:
+
+![actorcritic](/images/actor_critic.png)
+
+We've definitely solved the issue of variance. This result seems good enough, but note that the results are being generated *per step*. We're able to generate reasonable results within just a thousand steps of `cartpole-v1`! This lends credence to the idea that Actor-Critic is *data efficient*. It's easy enough to motivate why this is the case: training steps are occuring with every environment step instead of after every game.
+
+# Conclusion
+This was a journey, but it's one that has been well-trodden. I only really went along with this so I could get a bit of practice with PyTorch, but the most useful part of this exercise wasn't the implementation but rather the clarity of thought that reaching a point where I could implement that algorithm. I now have a comfortable understanding of Actor-Critic - a pretty unshakeable model in my mind of
+1. Why it is used,
+2. Why it was developed compared to REINFORCE
+3. Where future developments might lie. 
+
+All in all, a good project.
+
+Now, speaking of those future developments, it's on to the `PPO` algorithm. We move on to modern RL! :) 
