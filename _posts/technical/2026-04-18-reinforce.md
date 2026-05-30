@@ -295,7 +295,7 @@ $$
 \begin{align*}
 \theta_{t+1} &= \theta_t + \alpha \nabla \log \pi(A_t \vert S_t, \theta_t) \delta_t \\
 w_{t+1} &= r_{t+1} + \beta \nabla V(S_t) \delta_t
-\end{align}
+\end{align*}
 $$
 
 The ubiquitous temporal difference error shows up as
