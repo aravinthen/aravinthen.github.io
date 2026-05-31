@@ -5,7 +5,7 @@ math: True
 ---
 
 # A War Story: from REINFORCE to Actor-Critic
-I've spent much of the last month slowly chipping away at understanding classical reinforcement learning algorithms, which you can read about here. My goal now is to make the transition to true deep reinforcement learning algorithms.
+I've spent much of the last month slowly chipping away at understanding classical reinforcement learning algorithms, which you can read about [here](https://aravinthen.github.io/2026/02/28/lessons_from_classical_rl/). My goal now is to make the transition to true deep reinforcement learning algorithms.
 The field of deep learning is concerned with the engineering of powerful function approximators (specifically, multi-layered neural networks) for analysis, pattern recognition and decision making. The core of these function approximators is a set of parameters that are typically tuned using an optimization procedure with respect to some target value. 
 
 Deep reinforcement learning, then, is the use of such paramaterized function approximators to develop autonomous decision making agents. The tuning is necessarily based around tweaking these parameters with respect to a reward signal. Basically,
@@ -118,7 +118,7 @@ These steps shift from considering the visitation counts to representing a full 
 Now, the issue here is the calculation of $$\sum_{s'} \eta(s')$$. As mentioned, this is the expected number of total time steps spent in all states during a single episode. Does this mean that in order to even use this expression, you have to *finish an episode*? That's not useful! The trick here is to remove the hard condition of equality and work with proportionality instead. As a result, you get 
 
 $$
-\nabla J(\mathbf{\theta}) \propto \sum_s \mu(s) \sum_a \nabla \pi(a \vert x) q_\pi(x,a)
+\nabla J(\mathbf{\theta}) \propto \sum_s \mu(s) \sum_a \nabla \pi(a \vert s) q_\pi(s,a)
 $$
 
 If $$\mu(s)$$ is a probability distribution of states and we're summing over the states, then that means that the above is an **expectation**. 
@@ -272,7 +272,7 @@ Sutton and Barto advocate for using another learned representation to represent 
 The main difference here is in the update rule,
 
 $$
-\theta_{t+1} = \theta_t + \alpha (G_t - b(S_t) \nabla \log \pi(A_t \vert S_t, \theta_t)
+\theta_{t+1} = \theta_t + \alpha (G_t - b(S_t)) \nabla \log \pi(A_t \vert S_t, \theta_t)
 $$
 
 where the addition of a baseline $$b(S_t)$$ represents the baseline. 
@@ -294,14 +294,14 @@ The main difference between REINFORCE with a baseline and the Actor-Critic metho
 $$
 \begin{align*}
 \theta_{t+1} &= \theta_t + \alpha \nabla \log \pi(A_t \vert S_t, \theta_t) \delta_t \\
-w_{t+1} &= r_{t+1} + \beta \nabla V(S_t) \delta_t
+w_{t+1} &= w_t + \beta \nabla V(S_t) \delta_t
 \end{align*}
 $$
 
 The ubiquitous temporal difference error shows up as
 
 $$
-\delta_t = r_{t+1} + \gamma ( V(S_{t+1}) - V(S_t) ),
+\delta_t = r_{t+1} + \gamma V(S_{t+1}) - V(S_t),
 $$
 
 and this is really the core of how things change. It ought to be noted that, as usual, the critic update is conducted via stochastic gradient descent: this makes it very simple to include via `PyTorch` (as implemented [here](https://github.com/aravinthen/deep_rl_experiments/blob/main/algorithms/reinforce/actor_critic.py)). In general, the basic class structure of the policy gradient method lends really nicely to such extensions, so it barely took an hour to get the following result:
@@ -312,10 +312,8 @@ We've definitely solved the issue of variance. This result seems good enough, bu
 
 # Conclusion
 This was a journey, but it's one that has been well-trodden. I only really went along with this so I could get a bit of practice with PyTorch, but the most useful part of this exercise wasn't the implementation but rather the clarity of thought that reaching a point where I could implement that algorithm. I now have a comfortable understanding of Actor-Critic - a pretty unshakeable model in my mind of
-1. Why it is used,
-2. Why it was developed compared to REINFORCE
-3. Where future developments might lie. 
+1. why it is used,
+2. why it was developed compared to REINFORCE
+3. where future developments might lie. 
 
-All in all, a good project.
-
-Now, speaking of those future developments, it's on to the `PPO` algorithm. We move on to modern RL! :) 
+All in all, a good project, but we need to push further. There is a reason that vanilla Actor-Critic has been supplanted in the way it has. Now, it's on to the `PPO` algorithm. We move on to modern RL! :) 
