@@ -1,5 +1,5 @@
 ---
-title: 1. Multi-agent Reinforcement Learning - Game theory
+title: Multi-agent Reinforcement Learning 1 - Game theory
 category: literature
 math: True
 ---

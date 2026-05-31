@@ -1,5 +1,5 @@
 ---
-title: 2. Multi-agent Reinforcement Learning - Learning Dynamics
+title: Multi-agent Reinforcement Learning 2 - Learning Dynamics
 category: literature
 math: True
 ---
