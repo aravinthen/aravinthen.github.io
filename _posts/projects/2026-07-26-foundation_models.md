@@ -1,5 +1,5 @@
 ---
-title: Path to the Frontier I: Foundation model mastery
+title: Path to the Frontier I - Foundation models
 category: projects
 ---
 
