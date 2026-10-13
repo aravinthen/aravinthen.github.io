@@ -1,0 +1,87 @@
+/* Logbook archive: uses the website's existing dark/orange CSS variables. */
+[hidden], .log-item[hidden], .log-month[hidden] { display: none !important; }
+
+.log-index, .log-timelines { max-width: 700px; margin: 0 auto; }
+.log-archive-links { margin: 1.2rem 0 1.75rem; }
+.log-controls { border: 1px solid var(--border); background: #111; padding: 1.1rem; }
+.log-controls label[for="log-search"] { display: block; margin-bottom: 0.45rem; }
+#log-search { display: block; width: 100%; padding: 0.65rem 0.8rem; background: var(--bg); color: var(--fg); border: 1px solid #464646; border-radius: 3px; font: inherit; }
+#log-search:focus-visible, .log-controls select:focus-visible, .log-calendar-panel select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.log-filter-row { display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap; margin-top: 0.9rem; }
+.log-controls select, .log-calendar-panel select { padding: 0.45rem 0.6rem; background: var(--bg); color: var(--fg); border: 1px solid #464646; border-radius: 3px; font: inherit; }
+.log-plain-button { padding: 0.35rem 0.2rem; border: 0; background: transparent; color: var(--accent); cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.log-plain-button:hover { color: #ffd7a0; }
+.log-plain-button:focus-visible, .log-filter-chip:focus-within, .log-calendar-day:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.log-tag-panel { margin-top: 1rem; }
+.log-tag-panel summary { cursor: pointer; color: var(--accent); }
+.log-filter-hint { color: var(--muted); font-size: 0.8rem; }
+.log-filter-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.85rem 0 0.2rem; }
+.log-filter-chip { display: inline-flex; align-items: center; border: 1px solid #373737; padding: 0.25rem 0.55rem; cursor: pointer; font-size: 0.78rem; line-height: 1.5; background: #161616; }
+.log-filter-chip:has(input:checked) { border-color: var(--accent); background: #2e1c10; color: #ffd7a0; }
+.log-filter-chip input { margin: 0 0.35rem 0 0; accent-color: var(--accent); }
+.log-filter-warning { color: #ffd7a0; margin: 0.7rem 0 0; font-size: 0.85rem; }
+.log-result-bar { display: flex; gap: 1rem; align-items: center; justify-content: space-between; margin: 1rem 0 0.5rem; flex-wrap: wrap; }
+.log-result-bar p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.log-archive-actions { display: flex; gap: 1rem; font-size: 0.8rem; }
+.log-month { border-top: 1px solid var(--border); margin: 0; padding: 0.5rem 0; }
+.log-month > summary { display: flex; gap: 1rem; align-items: baseline; justify-content: space-between; padding: 0.25rem 0; cursor: pointer; color: var(--accent); font-size: 1rem; list-style-position: inside; }
+.log-month > summary::marker { color: var(--accent-dim); }
+.log-month-count { font-size: 0.76rem; color: var(--muted); white-space: nowrap; }
+.log-month-list { list-style: none; margin: 0; padding: 0.8rem 0 0.2rem; }
+.log-month .log-item { display: grid; grid-template-columns: 6.3rem minmax(0, 1fr); gap: 0.85rem; font-family: inherit; padding: 0.5rem 0; margin: 0; }
+.log-month .log-item-date { color: var(--muted); min-width: 0; font-size: 0.8rem; padding-top: 0.18rem; }
+.log-item-main { min-width: 0; }
+.log-month .log-item-title { font-size: 0.94rem; color: var(--accent); }
+.log-item-excerpt { color: var(--muted); margin: 0.15rem 0; font-size: 0.81rem; line-height: 1.5; }
+.log-item-tags, .log-entry-tags { display: flex; flex-wrap: wrap; gap: 0.4rem 0.6rem; font-size: 0.76rem; }
+.log-item-tags a, .log-tag-link { color: var(--accent-dim); text-decoration: underline; text-underline-offset: 2px; }
+.log-empty { border-top: 1px solid var(--border); padding: 1.3rem 0; color: var(--muted); }
+
+/* Individual entry navigation and related reading. */
+.log-entry-tags { margin-top: 2.5rem; align-items: center; }
+.log-entry-tags span { color: var(--muted); }
+.log-pagination { display: flex; justify-content: space-between; align-items: flex-start; gap: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 2rem; font-size: 0.85rem; }
+.log-pagination a { max-width: 48%; }
+.log-pagination-next { margin-left: auto; text-align: right; }
+.log-backlinks { margin: 1.4rem 0 0; font-size: 0.85rem; }
+.log-backlinks span { color: var(--muted); margin: 0 0.3rem; }
+.log-related { border-top: 1px solid var(--border); margin-top: 2rem; padding-top: 0.8rem; }
+.log-related h2 { font-size: 1.05rem; }
+.log-related ul { padding-left: 1.2rem; }
+.log-related li { font-size: 0.87rem; margin: 0.25rem 0; }
+.log-related time { color: var(--muted); font-size: 0.75rem; }
+.log-related p { font-size: 0.84rem; color: var(--muted); }
+
+/* Topic timelines. */
+.log-timeline-menu { display: flex; flex-wrap: wrap; gap: 0.6rem 1.1rem; padding: 1rem 0; margin: 1rem 0 2rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.log-timeline-topic { border-bottom: 1px solid var(--border); padding: 0.9rem 0; scroll-margin-top: 1rem; }
+.log-timeline-topic > summary { cursor: pointer; font-size: 1.05rem; color: var(--accent); }
+.log-timeline-count { font-size: 0.78rem; color: var(--muted); }
+.log-timeline-links { margin: 0.6rem 0; font-size: 0.8rem; }
+.log-timeline-links a { margin-right: 0.65rem; }
+.log-timeline-list { list-style: none; padding: 0 0 0 0.5rem; }
+.log-timeline-list li { display: grid; grid-template-columns: 6.8rem minmax(0, 1fr) auto; gap: 0.7rem; margin: 0.6rem 0; font-size: 0.87rem; }
+.log-timeline-list time { color: var(--muted); font-size: 0.78rem; }
+.log-milestone { color: #ffd7a0; font-size: 0.74rem; font-weight: normal; }
+.log-longform { margin-top: 2rem; }
+
+/* Optional year overview. */
+.log-calendar-panel { margin-top: 2.3rem; padding-top: 0.8rem; border-top: 1px solid var(--border); }
+.log-calendar-panel > summary { color: var(--accent); cursor: pointer; font-size: 1rem; }
+.log-calendar-panel label { margin-right: 0.6rem; }
+.log-calendar-scroll { max-width: 100%; margin: 0.9rem 0; overflow-x: auto; padding: 3px 1px 8px; }
+.log-calendar { display: grid; grid-template-rows: repeat(7, 12px); grid-auto-flow: column; grid-auto-columns: 12px; gap: 3px; width: max-content; }
+.log-calendar-day { width: 12px; height: 12px; background: #303030; border-radius: 2px; display: block; }
+.log-calendar-day.outside-year { background: transparent; }
+.log-calendar-day.has-entry { background: var(--accent-dim); }
+.log-calendar-day.has-entry:hover, .log-calendar-day.multiple-entries { background: var(--accent); }
+
+@media (max-width: 560px) {
+  .log-month .log-item { grid-template-columns: 4.8rem minmax(0, 1fr); gap: 0.4rem; }
+  .log-pagination { flex-direction: column; }
+  .log-pagination a { max-width: 100%; }
+  .log-pagination-next { align-self: flex-end; }
+  .log-timeline-list li { grid-template-columns: 1fr; gap: 0.1rem; }
+  .log-filter-row { align-items: flex-start; }
+  .log-result-bar { align-items: flex-start; }
+}

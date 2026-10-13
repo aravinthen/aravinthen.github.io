@@ -1,0 +1,13 @@
+---
+layout: null
+permalink: /log/search.json
+---
+[
+{% assign logs = site.log | sort: 'date' | reverse %}
+{% for entry in logs %}
+  {
+    "url": {{ entry.url | relative_url | jsonify }},
+    "body": {{ entry.content | markdownify | strip_html | normalize_whitespace | jsonify }}
+  }{% unless forloop.last %},{% endunless %}
+{% endfor %}
+]

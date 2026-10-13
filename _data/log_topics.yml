@@ -1,0 +1,18 @@
+- title: Reinforcement learning
+  slug: reinforcement-learning
+  tags: [reinforcement-learning]
+- title: Post-training and reasoning
+  slug: post-training-reasoning
+  tags: [post-training, reasoning, rlhf]
+- title: AI safety and alignment
+  slug: ai-safety
+  tags: [ai-safety, alignment]
+- title: Multi-agent methods
+  slug: multi-agent
+  tags: [multi-agent, multi-agent-rl, game-theory, marl]
+- title: Systems and engineering
+  slug: systems
+  tags: [systems, infrastructure, engineering, website]
+- title: Mathematics
+  slug: mathematics
+  tags: [mathematics, math]

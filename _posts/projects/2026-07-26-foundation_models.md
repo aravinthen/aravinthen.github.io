@@ -1,5 +1,5 @@
 ---
-title: Path to the Frontier I - Foundation models
+title: Foundation models and post-training
 category: projects
 ---
 

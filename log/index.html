@@ -3,23 +3,99 @@ layout: default
 title: Logbook
 ---
 
-<section class="log-index">
+<section class="log-index" data-log-index data-search-url="{{ '/log/search.json' | relative_url }}">
   <h2>Logbook</h2>
-  <p>
-  My logbook. This page is updated daily and contains nitty-gritty boring technical details as well as more routine, non-blogworthy content. 
-  </p>
+  <p>My logbook. This page is updated daily and contains nitty-gritty boring technical details as well as more routine, non-blogworthy content.</p>
+  <p class="log-archive-links"><a href="{{ '/log/timelines/' | relative_url }}">Research timelines →</a></p>
 
-  {% assign logs = site.log | sort: "date" | reverse %}
-
-  {% for entry in logs %}
-    <div class="log-item">
-      <span class="log-item-date">
-        {{ entry.date | date: "%Y-%m-%d" }}
-      </span>
-
-      <a class="log-item-title" href="{{ entry.url }}">
-        {{ entry.title | default: "Untitled entry" }}
-      </a>
+  <div class="log-controls" role="search" aria-label="Search the logbook">
+    <label for="log-search">Search log entries</label>
+    <input id="log-search" type="search" autocomplete="off" placeholder="Search titles, tags, or entry text…">
+    <div class="log-filter-row">
+      <label for="log-month-select">Month</label>
+      <select id="log-month-select">
+        <option value="">All months</option>
+        {% assign last_month = '' %}
+        {% assign logs = site.log | sort: 'date' | reverse %}
+        {% for entry in logs %}
+          {% assign this_month = entry.date | date: '%Y-%m' %}
+          {% if this_month != last_month %}
+            <option value="{{ this_month }}">{{ entry.date | date: '%B %Y' }}</option>
+            {% assign last_month = this_month %}
+          {% endif %}
+        {% endfor %}
+      </select>
+      <button id="log-clear-filters" class="log-plain-button" type="button">Clear filters</button>
     </div>
-  {% endfor %}
+    <details class="log-tag-panel" open>
+      <summary>Filter by topic <span class="log-filter-hint">(multiple tags match together)</span></summary>
+      <div id="log-tag-filters" class="log-filter-tags" aria-label="Topic filters"></div>
+    </details>
+    <p id="log-search-warning" class="log-filter-warning" hidden>Full-text search is unavailable; title and tag search still works.</p>
+  </div>
+
+  <div class="log-result-bar">
+    <p id="log-result-status" role="status" aria-live="polite">Showing {{ site.log.size }} of {{ site.log.size }} entries</p>
+    <div class="log-archive-actions">
+      <button id="log-expand-all" class="log-plain-button" type="button">Expand all</button>
+      <button id="log-collapse-all" class="log-plain-button" type="button">Collapse all</button>
+    </div>
+  </div>
+
+  <div class="log-archive" id="log-archive">
+    {% assign previous_month = '' %}
+    {% for entry in logs %}
+      {% assign current_month = entry.date | date: '%Y-%m' %}
+      {% if current_month != previous_month %}
+        {% unless forloop.first %}
+            </ul>
+          </details>
+        {% endunless %}
+        <details class="log-month" data-month="{{ current_month }}" {% if forloop.first %}open{% endif %}>
+          <summary><span>{{ entry.date | date: '%B %Y' }}</span><span class="log-month-count"></span></summary>
+          <ul class="log-month-list">
+      {% endif %}
+      <li class="log-item"
+          data-title="{{ entry.title | default: 'Untitled entry' | escape }}"
+          data-date="{{ entry.date | date: '%Y-%m-%d' }}"
+          data-month="{{ current_month }}"
+          data-url="{{ entry.url | relative_url }}"
+          data-tags="{{ entry.tags | join: '|' | escape }}">
+        <time class="log-item-date" datetime="{{ entry.date | date: '%Y-%m-%d' }}">{{ entry.date | date: '%d %b' }}</time>
+        <div class="log-item-main">
+          <a class="log-item-title" href="{{ entry.url | relative_url }}">{{ entry.title | default: 'Untitled entry' }}</a>
+          {% if entry.summary %}
+            {% assign excerpt = entry.summary %}
+          {% else %}
+            {% assign excerpt = entry.content | markdownify | strip_html | normalize_whitespace | strip | truncate: 160 %}
+          {% endif %}
+          {% if excerpt != '' %}<p class="log-item-excerpt">{{ excerpt | escape }}</p>{% endif %}
+          {% if entry.tags and entry.tags.size > 0 %}
+            <div class="log-item-tags" aria-label="Entry topics">
+              {% for tag in entry.tags %}
+                <a href="{{ '/log/' | relative_url }}?tag={{ tag | url_encode }}">{{ tag }}</a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </li>
+      {% assign previous_month = current_month %}
+    {% endfor %}
+    {% if logs.size > 0 %}
+          </ul>
+        </details>
+    {% endif %}
+  </div>
+
+  <p id="log-empty" class="log-empty" hidden>No entries match these filters. Try clearing a tag or changing your search.</p>
+
+  <details class="log-calendar-panel">
+    <summary>Activity calendar</summary>
+    <p class="log-filter-hint">Days with published log entries are highlighted. Select a day to open its entry.</p>
+    <label for="log-calendar-year">Year</label>
+    <select id="log-calendar-year"></select>
+    <div class="log-calendar-scroll"><div id="log-calendar" class="log-calendar" aria-label="Log entries by date"></div></div>
+  </details>
+  <noscript><p>Enable JavaScript to use search, tag filters, and the activity calendar. All entries remain browsable by month above.</p></noscript>
 </section>
+<script src="{{ '/assets/js/log.js' | relative_url }}" defer></script>

@@ -4,24 +4,90 @@ layout: default
 
 <article class="log-entry">
   <header class="log-header">
-    <div class="log-date">
-      {{ page.date | date: "%Y-%m-%d" }}
-    </div>
-    {% if page.title %}
-    <h1 class="log-title">{{ page.title }}</h1>
-    {% endif %}
+    <div class="log-date">{{ page.date | date: "%Y-%m-%d" }}</div>
+    {% if page.title %}<h1 class="log-title">{{ page.title }}</h1>{% endif %}
   </header>
+  <div class="log-content">{{ content }}</div>
 
-  <div class="log-content">
-    {{ content }}
-  </div>
-
-  {% if page.tags %}
-  <footer class="log-tags">
-    tags:
+  {% if page.tags and page.tags.size > 0 %}
+  <div class="log-entry-tags" aria-label="Entry topics">
+    <span>Topics:</span>
     {% for tag in page.tags %}
-      <span class="tag">{{ tag }}</span>
+      <a class="log-tag-link" href="{{ '/log/' | relative_url }}?tag={{ tag | url_encode }}">{{ tag }}</a>
     {% endfor %}
-  </footer>
+  </div>
+  {% endif %}
+
+  {% assign logs = site.log | sort: 'date' %}
+  {% assign previous_log = nil %}
+  {% assign next_log = nil %}
+  {% for entry in logs %}
+    {% if entry.url == page.url %}
+      {% assign previous_index = forloop.index0 | minus: 1 %}
+      {% assign next_index = forloop.index0 | plus: 1 %}
+      {% if previous_index >= 0 %}{% assign previous_log = logs[previous_index] %}{% endif %}
+      {% if next_index < logs.size %}{% assign next_log = logs[next_index] %}{% endif %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  <nav class="log-pagination" aria-label="Log navigation">
+    {% if previous_log %}
+      <a class="log-pagination-prev" href="{{ previous_log.url | relative_url }}" rel="prev">← Previous: {{ previous_log.title | default: 'Untitled entry' }}</a>
+    {% endif %}
+    {% if next_log %}
+      <a class="log-pagination-next" href="{{ next_log.url | relative_url }}" rel="next">Next: {{ next_log.title | default: 'Untitled entry' }} →</a>
+    {% endif %}
+  </nav>
+  <p class="log-backlinks"><a href="{{ '/log/' | relative_url }}">All log entries</a> <span aria-hidden="true">·</span> <a href="{{ '/log/timelines/' | relative_url }}">Research timelines</a></p>
+
+  {% comment %}
+    To curate related entries, set 'related: ['2026-07-09', '2026-07-10']' in log front matter.
+    To reference articles, set 'related_notes: [{ title: "PPO", url: "/2026/05/30/ppo/" }]'.
+    Without a 'related' field, show up to three recent entries with shared tags.
+  {% endcomment %}
+  {% if page.related or page.tags %}
+    {% assign related_shown = 0 %}
+    <aside class="log-related" aria-label="Related log entries">
+      <h2>Related log entries</h2>
+      <ul>
+        {% if page.related %}
+          {% for reference in page.related %}
+            {% assign reference_date = reference | date: '%Y-%m-%d' %}
+            {% for entry in logs %}
+              {% assign entry_date = entry.date | date: '%Y-%m-%d' %}
+              {% if reference_date == entry_date and entry.url != page.url %}
+                <li><a href="{{ entry.url | relative_url }}">{{ entry.title | default: entry_date }}</a> <time datetime="{{ entry_date }}">{{ entry_date }}</time></li>
+                {% assign related_shown = related_shown | plus: 1 %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        {% else %}
+          {% assign newest_first = logs | reverse %}
+          {% for entry in newest_first %}
+            {% if entry.url != page.url %}
+              {% assign shares_tag = false %}
+              {% for tag in page.tags %}
+                {% if entry.tags contains tag %}{% assign shares_tag = true %}{% endif %}
+              {% endfor %}
+              {% if shares_tag %}
+                <li><a href="{{ entry.url | relative_url }}">{{ entry.title | default: 'Untitled entry' }}</a> <time datetime="{{ entry.date | date: '%Y-%m-%d' }}">{{ entry.date | date: '%Y-%m-%d' }}</time></li>
+                {% assign related_shown = related_shown | plus: 1 %}
+              {% endif %}
+            {% endif %}
+            {% if related_shown >= 3 %}{% break %}{% endif %}
+          {% endfor %}
+        {% endif %}
+      </ul>
+      {% if related_shown == 0 %}<p>No related entries yet.</p>{% endif %}
+    </aside>
+  {% endif %}
+
+  {% if page.related_notes and page.related_notes.size > 0 %}
+    <aside class="log-related" aria-label="Related longer-form writing">
+      <h2>Longer-form writing</h2>
+      <ul>{% for note in page.related_notes %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul>
+    </aside>
   {% endif %}
 </article>

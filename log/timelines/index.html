@@ -1,0 +1,80 @@
+---
+layout: default
+title: Research timelines
+---
+
+<section class="log-timelines">
+  <h2>Research timelines</h2>
+  <p>Follow research topics from their earliest tagged entries to the present. These timelines are assembled automatically from logbook tags; new entries appear without maintaining another archive.</p>
+  <p><a href="{{ '/log/' | relative_url }}">← Back to the logbook</a></p>
+
+  {% assign logs = site.log | sort: 'date' %}
+  {% assign topic_index = 0 %}
+  <nav class="log-timeline-menu" aria-label="Research topics">
+    {% for topic in site.data.log_topics %}
+      {% assign topic_count = 0 %}
+      {% for entry in logs %}
+        {% assign matching = false %}
+        {% for topic_tag in topic.tags %}
+          {% if entry.tags contains topic_tag %}{% assign matching = true %}{% endif %}
+        {% endfor %}
+        {% if matching %}{% assign topic_count = topic_count | plus: 1 %}{% endif %}
+      {% endfor %}
+      {% if topic_count > 0 %}<a href="#{{ topic.slug }}">{{ topic.title }} ({{ topic_count }})</a>{% endif %}
+    {% endfor %}
+  </nav>
+
+  {% for topic in site.data.log_topics %}
+    {% assign topic_count = 0 %}
+    {% for entry in logs %}
+      {% assign matching = false %}
+      {% for topic_tag in topic.tags %}
+        {% if entry.tags contains topic_tag %}{% assign matching = true %}{% endif %}
+      {% endfor %}
+      {% if matching %}{% assign topic_count = topic_count | plus: 1 %}{% endif %}
+    {% endfor %}
+    {% if topic_count > 0 %}
+    <details class="log-timeline-topic" id="{{ topic.slug }}" {% if topic_index == 0 %}open{% endif %}>
+      <summary>{{ topic.title }} <span class="log-timeline-count">({{ topic_count }} entries)</span></summary>
+      <p class="log-timeline-links">
+        {% for topic_tag in topic.tags %}
+          <a href="{{ '/log/' | relative_url }}?tag={{ topic_tag | url_encode }}">{{ topic_tag }}</a>
+        {% endfor %}
+      </p>
+      <ol class="log-timeline-list">
+        {% for entry in logs %}
+          {% assign matching = false %}
+          {% for topic_tag in topic.tags %}
+            {% if entry.tags contains topic_tag %}{% assign matching = true %}{% endif %}
+          {% endfor %}
+          {% if matching %}
+            <li>
+              <time datetime="{{ entry.date | date: '%Y-%m-%d' }}">{{ entry.date | date: '%d %b %Y' }}</time>
+              <a href="{{ entry.url | relative_url }}">{{ entry.title | default: 'Untitled entry' }}</a>
+              {% if entry.milestone %}<strong class="log-milestone">milestone</strong>{% endif %}
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ol>
+    </details>
+    {% assign topic_index = topic_index | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+
+  <section class="log-longform">
+    <h3>Beyond the daily log</h3>
+    <p>For extended treatments of individual topics, see <a href="{{ '/technical/' | relative_url }}">technical notes</a>, <a href="{{ '/projects/' | relative_url }}">research projects</a>, and <a href="{{ '/literature/' | relative_url }}">literature reviews</a>.</p>
+  </section>
+</section>
+<script>
+(function () {
+  function openSelectedTimeline() {
+    var id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    var section = document.getElementById(id);
+    if (section && section.tagName === 'DETAILS') section.open = true;
+  }
+  window.addEventListener('hashchange', openSelectedTimeline);
+  openSelectedTimeline();
+}());
+</script>
