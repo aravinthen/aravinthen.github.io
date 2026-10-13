@@ -39,9 +39,13 @@
 
   // Tags are derived from the current archive, not from site.tags (which
   // represents posts rather than this custom Jekyll collection).
+  const taxonomy = JSON.parse(document.getElementById('log-taxonomy').textContent);
+  const canonicalTags = new Set(taxonomy.map(function (topic) { return topic.slug; }));
+  const aliases = new Map();
+  taxonomy.forEach(function (topic) { (topic.aliases || []).forEach(function (alias) { aliases.set(alias, topic.slug); }); });
   const counts = new Map();
   rows.forEach(function (row) {
-    row.tags.forEach(function (tag) { counts.set(tag, (counts.get(tag) || 0) + 1); });
+    row.tags.forEach(function (tag) { if (canonicalTags.has(tag)) counts.set(tag, (counts.get(tag) || 0) + 1); });
   });
   const checkboxes = new Map();
   Array.from(counts.keys()).sort(function (a, b) {
@@ -71,7 +75,7 @@
     search.value = params.get('q') || '';
     const month = params.get('month') || '';
     monthSelect.value = Array.from(monthSelect.options).some(function (opt) { return opt.value === month; }) ? month : '';
-    const requested = new Set(params.getAll('tag'));
+    const requested = new Set(params.getAll('tag').map(function (tag) { return aliases.get(tag) || tag; }));
     checkboxes.forEach(function (input, tag) { input.checked = requested.has(tag); });
   }
 

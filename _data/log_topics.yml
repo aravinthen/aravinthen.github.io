@@ -1,18 +1,74 @@
 - title: Reinforcement learning
   slug: reinforcement-learning
-  tags: [reinforcement-learning]
+  tags:
+  - reinforcement-learning
+  aliases:
+  - world-models
+- title: Deep learning
+  slug: deep-learning
+  tags:
+  - deep-learning
+  aliases:
+  - graph-neural-networks
+  - equivariant-neural-networks
+  - diffusion-models
+  - machine-learning
+  - foundation-models
+  - foundation-model
 - title: Post-training and reasoning
-  slug: post-training-reasoning
-  tags: [post-training, reasoning, rlhf]
+  slug: post-training
+  tags:
+  - post-training
+  aliases:
+  - reasoning
+  - rlhf
 - title: AI safety and alignment
   slug: ai-safety
-  tags: [ai-safety, alignment]
+  tags:
+  - ai-safety
+  aliases:
+  - AI safety
+  - safety
+  - alignment
 - title: Multi-agent methods
   slug: multi-agent
-  tags: [multi-agent, multi-agent-rl, game-theory, marl]
+  tags:
+  - multi-agent
+  aliases:
+  - game-theory
+  - marl
+  - multi-agent-rl
 - title: Systems and engineering
   slug: systems
-  tags: [systems, infrastructure, engineering, website]
+  tags:
+  - systems
+  aliases:
+  - software-engineering
+  - software
+  - multiprocessing
+  - distributed-computing
+  - depth-first-search
+  - binary-search-trees
+  - backtracking
+  - back-tracking
+  - website
+  - maintenance
+  - infrastructure
+  - engineering
+  - artificial-intelligence
 - title: Mathematics
   slug: mathematics
-  tags: [mathematics, math]
+  tags:
+  - mathematics
+  aliases:
+  - sequential-modelling
+  - math
+- title: General
+  slug: general
+  tags:
+  - general
+  aliases:
+  - oof
+  - nothing
+  - literature-review
+  - life-changes

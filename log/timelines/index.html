@@ -71,7 +71,7 @@ title: Research timelines
   function openSelectedTimeline() {
     var id = decodeURIComponent(window.location.hash.slice(1));
     if (!id) return;
-    var section = document.getElementById(id);
+    var section = document.getElementById(id === 'post-training-reasoning' ? 'post-training' : id);
     if (section && section.tagName === 'DETAILS') section.open = true;
   }
   window.addEventListener('hashchange', openSelectedTimeline);
