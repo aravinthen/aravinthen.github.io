@@ -4,18 +4,19 @@ title: Literature Reviews
 section: literature
 ---
 
-<h2>Literature Reviews</h2>
+<h1>Literature Reviews</h1>
 <p>
 A weekly recap of the technical material that I've engaged with, ranging from research papers to useful blog posts.
 </p>
 
-<ul>
-  {% for post in site.posts %}
-    {% if post.category == "literature" %}
-      <li>
-        <a href="{{ post.url }}">{{ post.title }}</a>
-        <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
-      </li>
-    {% endif %}
-  {% endfor %}
-</ul>
+{% assign writing = site.posts | where: 'category', 'literature' | sort: 'date' %}
+{% assign series_names = '' | split: ',' %}
+{% for post in writing %}{% assign metadata = site.data.writing[post.url] %}{% assign series = post.series | default: metadata.series %}{% if series %}{% unless series_names contains series %}{% assign series_names = series_names | push: series %}{% endunless %}{% endif %}{% endfor %}
+{% for series in series_names %}
+<section class="reading-series"><h2>{{ series }}</h2><ul class="writing-list">
+{% for post in writing %}{% assign metadata = site.data.writing[post.url] %}{% assign post_series = post.series | default: metadata.series %}{% if post_series == series %}<li><a class="writing-title" href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%d %b %Y' }}</time></li>{% endif %}{% endfor %}
+</ul></section>
+{% endfor %}
+<section><h2>Other reading</h2><ul class="writing-list">
+{% assign latest_first = writing | reverse %}{% for post in latest_first %}{% assign metadata = site.data.writing[post.url] %}{% assign series = post.series | default: metadata.series %}{% unless series %}<li><a class="writing-title" href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%d %b %Y' }}</time></li>{% endunless %}{% endfor %}
+</ul></section>

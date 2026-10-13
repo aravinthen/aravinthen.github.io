@@ -1,0 +1,21 @@
+- title: Home
+  url: /
+  section: home
+- title: About
+  url: /about/
+  section: about
+- title: Projects
+  url: /projects/
+  section: projects
+- title: Technical notes
+  url: /technical/
+  section: technical
+- title: Literature
+  url: /literature/
+  section: literature
+- title: Misc
+  url: /misc/
+  section: misc
+- title: Log
+  url: /log/
+  section: log

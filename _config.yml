@@ -15,3 +15,12 @@ collections:
 
 exclude:
   - README.md
+
+url: "https://aravinthen.github.io"
+baseurl: ""
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: article

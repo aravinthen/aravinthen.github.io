@@ -1,0 +1,63 @@
+/2026/10/03/bluedot4/:
+  series: Notes on Technical AI Safety
+/2026/01/25/literature_review/:
+  series: Weekly literature reviews
+/2026/03/07/literature_review/:
+  series: Weekly literature reviews
+/2026/10/09/bluedot5/:
+  series: Notes on Technical AI Safety
+/2026/02/08/literature_review/:
+  series: Weekly literature reviews
+/2026/02/01/literature_review/:
+  series: Weekly literature reviews
+/2026/04/19/lit_rev_Road_to_MARL_1/:
+  series: Multi-agent Reinforcement Learning
+/2026/01/10/literature_review/:
+  series: Weekly literature reviews
+/2026/03/30/literature_review/:
+  series: Weekly literature reviews
+/2026/04/06/literature_review/:
+  series: Weekly literature reviews
+/2026/03/22/literature_review/:
+  series: Weekly literature reviews
+/2026/03/17/literature_review/:
+  series: Weekly literature reviews
+/2026/04/26/lit_rev_Road_to_MARL_2/:
+  series: Multi-agent Reinforcement Learning
+/2026/09/16/bluedot2/:
+  series: Notes on Technical AI Safety
+/2026/02/22/literature_review/:
+  series: Weekly literature reviews
+/2026/01/17/literature_review/:
+  series: Weekly literature reviews
+/2026/09/11/bluedot1/:
+  series: Notes on Technical AI Safety
+/2026/02/15/literature_review/:
+  series: Weekly literature reviews
+/2026/03/01/literature_review/:
+  series: Weekly literature reviews
+/2026/05/17/lit_rev_Road_to_MARL_3/:
+  series: Multi-agent Reinforcement Learning
+/2026/09/28/bluedot3/:
+  series: Notes on Technical AI Safety
+/2026/01/25/deep_reinforcement/:
+  repository: https://github.com/aravinthen/deep_rl_experiments
+  related_notes:
+  - title: Lessons from classical reinforcement learning
+    url: /2026/02/28/lessons_from_classical_rl/
+  - title: From REINFORCE to Actor-Critic
+    url: /2026/04/18/reinforce/
+  - title: Proximal Policy Optimization, layer by layer
+    url: /2026/05/30/ppo/
+/2026/10/13/bluedot/:
+  related_notes:
+  - title: Be careful what you wish for
+    url: /2026/09/11/bluedot1/
+  - title: Garbage and poison in a black box
+    url: /2026/09/16/bluedot2/
+  - title: When measurement bites back
+    url: /2026/09/28/bluedot3/
+  - title: The Heart of the Beast
+    url: /2026/10/03/bluedot4/
+  - title: Putting Reins on a Dragon
+    url: /2026/10/09/bluedot5/

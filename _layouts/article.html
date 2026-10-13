@@ -1,0 +1,29 @@
+---
+layout: default
+---
+{% assign metadata = site.data.writing[page.url] %}
+{% assign first_line = content | strip | split: '
+' | first %}
+<article class="research-article">
+  <header class="article-header">
+    {% for section in site.data.navigation %}{% if section.section == page.category %}<a class="parent-link" href="{{ section.url | relative_url }}">← {{ section.title }}</a>{% endif %}{% endfor %}
+    {% unless first_line contains '<h1' %}<h1>{{ page.title }}</h1>{% endunless %}
+    <div class="article-meta"><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%d %B %Y' }}</time>{% if page.status %}<span>{{ page.status | escape }}</span>{% endif %}{% if page.topics %}<span>{{ page.topics | join: ' · ' | escape }}</span>{% endif %}</div>
+  </header>
+  <details class="article-toc" hidden><summary>On this page</summary><nav aria-label="Table of contents"><ol></ol></nav></details>
+  <div class="article-content">{{ content }}</div>
+  {% assign repository = page.repository | default: metadata.repository %}
+  {% if repository %}<p class="article-links"><a href="{{ repository | escape }}">Experimental implementation ↗</a></p>{% endif %}
+  {% assign related = page.related_notes | default: metadata.related_notes %}
+  {% if related.size > 0 %}<aside class="article-related"><h2>Related articles</h2><ul>{% for note in related %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul></aside>{% endif %}
+  {% if page.category == 'technical' or page.category == 'literature' %}
+  {% for project in site.posts %}{% assign project_data = site.data.writing[project.url] %}{% for note in project_data.related_notes %}{% if note.url == page.url %}<p class="article-links"><a href="{{ project.url | relative_url }}">← {{ project.title }}</a>{% if project_data.repository %} · <a href="{{ project_data.repository }}">Experimental implementation ↗</a>{% endif %}</p>{% endif %}{% endfor %}{% endfor %}
+  {% endif %}
+  {% assign series = page.series | default: metadata.series %}
+  {% if series %}
+    {% assign ordered = site.posts | sort: 'date' %}{% assign previous = nil %}{% assign next = nil %}{% assign found = false %}
+    {% for post in ordered %}{% assign post_meta = site.data.writing[post.url] %}{% assign post_series = post.series | default: post_meta.series %}{% if post_series == series %}{% if post.url == page.url %}{% assign found = true %}{% elsif found %}{% assign next = post %}{% break %}{% else %}{% assign previous = post %}{% endif %}{% endif %}{% endfor %}
+    <nav class="article-pagination" aria-label="Reading series">{% if previous %}<a href="{{ previous.url | relative_url }}" rel="prev">← {{ previous.title }}</a>{% endif %}{% if next %}<a href="{{ next.url | relative_url }}" rel="next">{{ next.title }} →</a>{% endif %}</nav>
+  {% endif %}
+  <p class="article-links"><a href="{{ '/log/' | relative_url }}">Daily research logs</a> · <a href="{{ '/log/timelines/' | relative_url }}">Browse by topic</a></p>
+</article>
