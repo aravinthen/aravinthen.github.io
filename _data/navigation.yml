@@ -4,6 +4,9 @@
 - title: Literature
   url: /literature/
   section: literature
+- title: Writing
+  url: /misc/
+  section: misc
 - title: Logbook
   url: /log/
   section: log

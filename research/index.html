@@ -5,7 +5,7 @@ section: research
 ---
 <h1>Research</h1>
 <section aria-labelledby="programmes-heading">
-  <h2 id="programmes-heading">Research programmes</h2>
+  <h2 id="programmes-heading">Projects</h2>
   {% assign projects = site.posts | where: 'category', 'projects' %}
   {% for post in projects %}
     {% assign metadata = site.data.writing[post.url] %}
@@ -25,7 +25,7 @@ section: research
       {% endif %}
       {% assign repository = post.repository | default: metadata.repository %}
       {% if repository %}<p class="programme-links"><a href="{{ repository | escape }}">Experimental implementation ↗</a></p>{% endif %}
-      {% include programme-notes.html project=post heading_level=4 %}
+      {% include programme-notes.html project=post heading_level=4 collapsible=true %}
       {% if metadata.related_notes.size > 0 %}
       <details class="programme-related"><summary>Associated reading</summary><ul>{% for note in metadata.related_notes %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul></details>
       {% endif %}

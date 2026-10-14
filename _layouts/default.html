@@ -34,7 +34,7 @@
     </header>
     <main id="content" tabindex="-1">{% if page.url == '/about/' %}{{ content | replace_first: '<h2', '<h1' | replace_first: '</h2>', '</h1>' }}{% else %}{{ content }}{% endif %}</main>
     <footer class="site-footer">
-      <nav aria-label="Footer"><a href="https://github.com/aravinthen">GitHub</a><a href="mailto:arre0raj@gmail.com">Email</a><a href="{{ '/feed.xml' | relative_url }}">RSS</a><a href="{{ '/misc/' | relative_url }}"{% if page.category == 'misc' or page.url == '/misc/' %} aria-current="page"{% endif %}>Miscellaneous</a> <a href="#top">Back to top ↑</a></nav>
+      <nav aria-label="Footer"><a href="https://github.com/aravinthen">GitHub</a><a href="mailto:arre0raj@gmail.com">Email</a><a href="{{ '/feed.xml' | relative_url }}">RSS</a> <a href="#top">Back to top ↑</a></nav>
     </footer>
   </div>
   {% if page.math or content contains '\(' or content contains '\[' or content contains '$$' %}{% include mathjax.html %}{% endif %}

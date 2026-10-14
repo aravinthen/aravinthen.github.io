@@ -3,9 +3,16 @@
   {% assign visible_notes = '' | split: ',' %}
   {% for note in programme_notes %}{% unless include.existing_content contains note.url %}{% assign visible_notes = visible_notes | push: note %}{% endunless %}{% endfor %}
   {% if visible_notes.size > 0 %}
+  {% if include.collapsible %}
+  <details class="programme-related programme-notes">
+    <summary>Technical notes</summary>
+    <ul>{% for note in visible_notes %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul>
+  </details>
+  {% else %}
   <div class="programme-notes">
     <h{{ include.heading_level | default: 2 }}>Technical notes</h{{ include.heading_level | default: 2 }}>
     {% include writing-list.html posts=visible_notes %}
   </div>
+  {% endif %}
   {% endif %}
 {% endif %}
