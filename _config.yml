@@ -17,6 +17,10 @@ exclude:
   - README.md
   - reports
   - tests
+  - MAINTENANCE.md
+  - Makefile
+  - Gemfile
+  - Gemfile.lock
 
 url: "https://aravinthen.github.io"
 baseurl: ""
