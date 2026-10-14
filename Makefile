@@ -9,7 +9,8 @@ check: build
 	$(PYTHON) tests/check_site.py "$(SITE_DIR)"
 serve:
 	$(JEKYLL) serve --destination "$(SITE_DIR)"
-test: check test-growth
+test: check
+	$(PYTHON) tests/automatic_indexing.py --browser
 	$(PYTHON) tests/browser_site.py --site "$(SITE_DIR)"
 test-growth:
 	$(PYTHON) tests/automatic_indexing.py

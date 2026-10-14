@@ -1,0 +1,2 @@
+# Correct YAML parsing, including dates and multiline front matter.
+PyYAML>=6.0,<7

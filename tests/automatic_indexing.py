@@ -1,27 +1,63 @@
-"""Check new documents and optional metadata using a temporary source copy.
-Run with the local Jekyll environment activated. No fixture touches the checkout.
+"""Simulate ordinary publishing in a disposable source copy; no permanent fixtures.
+JEKYLL_COMMAND optionally overrides the default 'bundle exec jekyll'.
+Pass --browser to also exercise the expanded taxonomy in the browser.
 """
+import argparse
+from datetime import date, timedelta
 from pathlib import Path
-import shutil, subprocess, tempfile
-root=Path(__file__).resolve().parents[1]
-with tempfile.TemporaryDirectory(prefix='notebook-indexing-',dir='/tmp') as folder:
- source=Path(folder)/'source';output=Path(folder)/'site'
- shutil.copytree(root,source,ignore=shutil.ignore_patterns('.git','tests','reports'))
- (source/'_posts/technical/2026-10-12-index-fixture.md').write_text('---\ntitle: Index fixture\ncategory: technical\ntopic: Fixture group\nstatus: Fixture status\n---\n')
- (source/'_posts/projects/2026-10-12-project-fixture.md').write_text('---\ntitle: Project fixture\ncategory: projects\nresearch_programme: fixture-programme\nstatus: Fixture status\nrepository: https://github.com/aravinthen/deep_rl_experiments\ntopics: [fixture]\n---\n')
- (source/'_posts/technical/2026-10-12-linked-fixture.md').write_text('---\ntitle: Linked fixture\ncategory: technical\nresearch_programme: fixture-programme\n---\n')
- (source/'_posts/technical/2026-10-12-orphan-fixture.md').write_text('---\ntitle: Orphan fixture\ncategory: technical\nresearch_programme: missing-programme\n---\n')
- (source/'_posts/literature/2026-10-12-series-fixture.md').write_text('---\ntitle: Series fixture\ncategory: literature\nseries: Fixture series\n---\n')
- (source/'_log/2026-10-14.md').write_text('---\nlayout: log\ntitle: Activity fixture\ndate: 2026-10-14\ntags: [post-training]\n---\n')
- subprocess.run(['ruby','/workspace/site-tools/root/usr/bin/jekyll','build','--config',str(source/'_config.yml'),'--source',str(source),'--destination',str(output),'--disable-disk-cache'],check=True,cwd=source)
- for path,text in [('index.html','Index fixture'),('index.html','Project fixture'),('index.html','Activity fixture'),('research/index.html','Index fixture'),('research/index.html','Linked fixture'),('research/index.html','Orphan fixture'),('research/index.html','Fixture status'),('literature/index.html','Fixture series'),('log/index.html','Activity fixture'),('log/timelines/index.html','Activity fixture')]:
-  assert text in (output/path).read_text(),(path,text)
- html=(output/'research/index.html').read_text()
- for slug in ['index-fixture','linked-fixture','orphan-fixture','project-fixture']:
-  assert html.count('href="/2026/10/12/'+slug+'/"')==1,slug
- assert 'Independent technical notes' in html
- linked=(output/'2026/10/12/linked-fixture/index.html').read_text()
- assert '/2026/10/12/project-fixture/' in linked
- project=(output/'2026/10/12/project-fixture/index.html').read_text()
- assert '/2026/10/12/linked-fixture/' in project
-print('PASS: newly added technical/project/literature/log documents index automatically; optional grouping/status/repository metadata renders')
+import shutil
+import tempfile
+import yaml
+from support import ROOT, Inventory, build
+from check_site import validate
+
+def growth(root=ROOT,browser=False):
+    root=Path(root).resolve();inventory=Inventory(root)
+    with tempfile.TemporaryDirectory(prefix='notebook-growth-') as folder:
+        source=Path(folder)/'source';output=Path(folder)/'output'
+        shutil.copytree(root,source,ignore=shutil.ignore_patterns('.git','_site','.venv','.bundle','.jekyll-cache','.sass-cache','__pycache__'))
+        tag=next(iter(sorted(inventory.canonical)))
+        second=next(t for t in sorted(inventory.canonical) if t!=tag)
+        # Pick unused, past publication dates to work regardless of today's date.
+        first=date.fromisoformat(min(d.day for d in inventory.logs))-timedelta(days=3)
+        def publish(path,metadata,body='Fixture text.\n'):
+            path=source/path;path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_text('---\n'+yaml.safe_dump(metadata,sort_keys=False)+'---\n'+body)
+        for offset,tags in [(0,[tag]),(1,[tag,second])]:
+            day=(first+timedelta(days=offset)).isoformat()
+            publish(f'_log/{day}.md',{'layout':'log','title':'Maintenance fixture','date':day,'tags':tags})
+        programme=next(p.meta['research_programme'] for p in inventory.projects if p.meta.get('research_programme'))
+        series=next(d.series for d in inventory.literature if d.series)
+        first_post=date.fromisoformat(min(p.day for p in inventory.posts))-timedelta(days=20)
+        def post(offset,category,slug,**extra):
+            day=(first_post+timedelta(days=offset)).isoformat()
+            publish(f'_posts/{category}/{day}-{slug}.md',{'title':slug,'category':category,**extra})
+        post(0,'technical','fixture-associated',research_programme=programme)
+        post(1,'technical','fixture-independent')
+        post(2,'projects','fixture-programme',research_programme='maintenance-fixture')
+        post(3,'literature','fixture-series',series=series)
+        post(4,'literature','fixture-unaffiliated')
+        # An unmatched programme is intentionally indexed as independent.
+        post(5,'technical','fixture-orphan',research_programme='unmatched-fixture')
+        edited=source/inventory.technical[0].path.relative_to(root)
+        with edited.open('a') as handle:handle.write('\nFixture paragraph added in the temporary copy.\n')
+        topics_path=source/'_data/log_topics.yml'
+        topics=yaml.safe_load(topics_path.read_text())
+        topics.append({'title':'Maintenance fixture topic','slug':'maintenance-fixture-topic','tags':['maintenance-fixture-topic'],'aliases':['maintenance-old-topic']})
+        topics_path.write_text(yaml.safe_dump(topics,sort_keys=False))
+        day=(first+timedelta(days=2)).isoformat()
+        publish(f'_log/{day}.md',{'layout':'log','title':'New taxonomy fixture','date':day,'tags':['maintenance-fixture-topic']})
+        build(source,output)
+        grown=validate(source,output)
+        assert len(grown.logs)==len(inventory.logs)+3
+        assert len(grown.posts)==len(inventory.posts)+6
+        if browser:
+            from browser_site import browser_checks
+            browser_checks(source,output)
+    print('PASS: new daily/dual-tag logs, programme note, independent/orphan notes, project, series/unaffiliated reviews, edited article and expanded canonical taxonomy; fixtures removed')
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source',type=Path,default=ROOT)
+    parser.add_argument('--browser',action='store_true')
+    options=parser.parse_args();growth(options.source,options.browser)
