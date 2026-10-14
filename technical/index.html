@@ -2,6 +2,7 @@
 layout: default
 title: Technical Notes
 section: technical
+redirect_to: /research/
 ---
 
 <h1>Technical Notes</h1>
@@ -9,6 +10,4 @@ section: technical
 A collection of technical notes that I've written as summaries from my studies and projects.
 </p>
 
-{% assign writing = site.posts | where: "category", "technical" %}
-{% assign groups = writing | group_by: 'topic' %}
-{% for group in groups %}{% if group.name != '' %}<section><h2>{{ group.name | escape }}</h2>{% endif %}{% include writing-list.html posts=group.items %}{% if group.name != '' %}</section>{% endif %}{% endfor %}
+<p><a href="{{ '/research/' | relative_url }}">Research →</a></p>

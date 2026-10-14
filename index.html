@@ -15,17 +15,11 @@ title: Home
   </p>
 </section>
 
-<section aria-labelledby="projects-heading">
-  <h2 id="projects-heading">Research projects</h2>
-  {% assign projects = site.posts | where: 'category', 'projects' %}
-  {% include writing-list.html posts=projects %}
-  <a class="section-link" href="{{ '/projects/' | relative_url }}">All projects →</a>
-</section>
-<section aria-labelledby="technical-heading">
-  <h2 id="technical-heading">Technical writing</h2>
-  {% assign technical = site.posts | where: 'category', 'technical' | slice: 0, 5 %}
-  {% include writing-list.html posts=technical %}
-  <a class="section-link" href="{{ '/technical/' | relative_url }}">All technical notes →</a>
+<section aria-labelledby="research-heading">
+  <h2 id="research-heading">Research</h2>
+  {% assign research = site.posts | where_exp: 'post', "post.category == 'projects' or post.category == 'technical'" | slice: 0, 6 %}
+  {% include writing-list.html posts=research %}
+  <a class="section-link" href="{{ '/research/' | relative_url }}">All research →</a>
 </section>
 <section aria-labelledby="writing-heading">
   <h2 id="writing-heading">Recent writing</h2>

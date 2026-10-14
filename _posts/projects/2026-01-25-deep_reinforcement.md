@@ -1,6 +1,7 @@
 ---
 title: Deep reinforcement learning experiments
 category: projects
+research_programme: deep-reinforcement-learning
 ---
 
 After spending a month getting to speed with reinforcement learning theory, it's time to finally get into the weeds of this field. The work here will slowly generate technical notes as I build algorithms and spend what I anticipate to be a great deal of my time fixing bugs and getting the processes to actually work as intended.
