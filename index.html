@@ -17,7 +17,13 @@ title: Home
 
 <section aria-labelledby="research-heading">
   <h2 id="research-heading">Research</h2>
-  {% assign research = site.posts | where_exp: 'post', "post.category == 'projects' or post.category == 'technical'" | slice: 0, 6 %}
+  {% assign research = '' | split: ',' %}
+  {% for post in site.posts %}
+    {% if post.category == 'projects' or post.category == 'technical' %}
+      {% assign research = research | push: post %}
+    {% endif %}
+    {% if research.size == 6 %}{% break %}{% endif %}
+  {% endfor %}
   {% include writing-list.html posts=research %}
   <a class="section-link" href="{{ '/research/' | relative_url }}">All research →</a>
 </section>
