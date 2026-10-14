@@ -15,21 +15,9 @@ title: Home
   </p>
 </section>
 
-<section aria-labelledby="research-heading">
-  <h2 id="research-heading">Research</h2>
-  {% assign research = '' | split: ',' %}
-  {% for post in site.posts %}
-    {% if post.category == 'projects' or post.category == 'technical' %}
-      {% assign research = research | push: post %}
-    {% endif %}
-    {% if research.size == 6 %}{% break %}{% endif %}
-  {% endfor %}
-  {% include writing-list.html posts=research %}
-  <a class="section-link" href="{{ '/research/' | relative_url }}">All research →</a>
-</section>
-<section aria-labelledby="writing-heading">
-  <h2 id="writing-heading">Recent writing</h2>
-  {% assign recent = site.posts | slice: 0, 5 %}
+<section aria-labelledby="posts-heading">
+  <h2 id="posts-heading">Posts</h2>
+  {% assign recent = site.posts | slice: 0, 8 %}
   {% include writing-list.html posts=recent %}
 </section>
 <section aria-labelledby="activity-heading">

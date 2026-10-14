@@ -9,7 +9,7 @@ layout: default
 {% if first_line contains '<h1' %}{% assign existing_title = true %}{% elsif first_line contains '<h2' and first_heading_text == page_title %}{% assign existing_title = true %}{% endif %}
 <article class="research-article">
   <header class="article-header">
-    {% if page.category == 'projects' or page.category == 'technical' %}{% include research-navigation.html %}{% else %}{% for section in site.data.navigation %}{% if section.section == page.category %}<a class="parent-link" href="{{ section.url | relative_url }}">← {{ section.title }}</a>{% endif %}{% endfor %}{% if page.category == 'misc' %}<a class="parent-link" href="{{ '/misc/' | relative_url }}">← Miscellaneous</a>{% endif %}{% endif %}
+    {% if page.category == 'projects' or page.category == 'technical' %}{% include research-navigation.html %}{% else %}{% for section in site.data.navigation %}{% if section.section == page.category %}<a class="parent-link" href="{{ section.url | relative_url }}">← {{ section.title }}</a>{% endif %}{% endfor %}{% endif %}
     {% unless existing_title %}<h1>{{ page.title }}</h1>{% endunless %}
     <div class="article-meta"><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%d %B %Y' }}</time>{% if page.status %}<span>{{ page.status | escape }}</span>{% endif %}{% if page.topics %}<span>{{ page.topics | join: ' · ' | escape }}</span>{% endif %}</div>
   </header>
