@@ -159,7 +159,8 @@ Never disable certificate verification. Standard `SSL_CERT_FILE` trust configura
 may be needed on such a network. External CDN availability is a browser-test
 prerequisite; the fast publishing check needs no browser or CDN.
 
-Override `PYTHON`, `SITE_DIR`, or `JEKYLL` in Make if needed. Growth tests accept
+Override `PYTHON`, `SITE_DIR`, or `JEKYLL` in Make if needed. Use
+`make serve SERVE_ARGS="--port 4001"` if the default preview port is occupied. Growth tests accept
 `JEKYLL_COMMAND` for a build-command override; default is `bundle exec jekyll`.
 Scripts find the checkout relative to themselves and accept source/output paths.
 Docker is optional: `bash tests/github_pages_build.sh /absolute/output/path` stores

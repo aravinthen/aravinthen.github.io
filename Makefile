@@ -1,6 +1,7 @@
 PYTHON ?= python3
 SITE_DIR ?= _site
 JEKYLL ?= bundle exec jekyll
+SERVE_ARGS ?=
 
 .PHONY: build check serve test test-full test-growth test-pages
 build:
@@ -8,7 +9,7 @@ build:
 check: build
 	$(PYTHON) tests/check_site.py "$(SITE_DIR)"
 serve:
-	$(JEKYLL) serve --destination "$(SITE_DIR)"
+	$(JEKYLL) serve --destination "$(SITE_DIR)" $(SERVE_ARGS)
 test: check
 	$(PYTHON) tests/automatic_indexing.py --browser
 	$(PYTHON) tests/browser_site.py --site "$(SITE_DIR)"

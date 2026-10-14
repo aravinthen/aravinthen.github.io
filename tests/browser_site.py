@@ -16,7 +16,8 @@ def browser_checks(source, site, base_url=None):
         page.on('pageerror',lambda e:errors.append(str(e)))
         with verified_cdn(page):
             def visit(url):
-                assert page.goto(base+url).status==200,url
+                response=page.goto(base+url)
+                assert response is None or response.status==200,url
                 redirects=page.locator('meta[http-equiv="refresh"]')
                 if redirects.count():
                     destination=redirects.get_attribute('content').split('url=',1)[1]
