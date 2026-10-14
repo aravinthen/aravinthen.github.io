@@ -1,0 +1,10 @@
+<ul class="writing-list">
+{% for post in include.posts %}
+  <li>
+    <a class="writing-title" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+    <time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%d %b %Y' }}</time>
+    {% if post.status %}<span class="meta">{{ post.status | escape }}</span>{% endif %}
+    {% if post.topics %}<span class="meta">{{ post.topics | join: ' · ' | escape }}</span>{% endif %}
+  </li>
+{% endfor %}
+</ul>

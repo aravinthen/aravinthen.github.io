@@ -4,18 +4,11 @@ title: Technical Notes
 section: technical
 ---
 
-<h2>Technical Notes</h2>
+<h1>Technical Notes</h1>
 <p>
 A collection of technical notes that I've written as summaries from my studies and projects.
 </p>
 
-<ul>
-  {% for post in site.posts %}
-    {% if post.category == "technical" %}
-      <li>
-        <a href="{{ post.url }}">{{ post.title }}</a>
-        <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
-      </li>
-    {% endif %}
-  {% endfor %}
-</ul>
+{% assign writing = site.posts | where: "category", "technical" %}
+{% assign groups = writing | group_by: 'topic' %}
+{% for group in groups %}{% if group.name != '' %}<section><h2>{{ group.name | escape }}</h2>{% endif %}{% include writing-list.html posts=group.items %}{% if group.name != '' %}</section>{% endif %}{% endfor %}

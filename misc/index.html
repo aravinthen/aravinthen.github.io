@@ -4,18 +4,10 @@ title: Miscellaneous
 section: misc
 ---
 
-<h2>Miscellaneous</h2>
+<h1>Miscellaneous</h1>
 <p>
 Miscellaneous writing - anything that doesn't necessarily fit into a specified technical stream.
 </p>
 
-<ul>
-  {% for post in site.posts %}
-    {% if post.category == "misc" %}
-      <li>
-        <a href="{{ post.url }}">{{ post.title }}</a>
-        <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
-      </li>
-    {% endif %}
-  {% endfor %}
-</ul>
+{% assign writing = site.posts | where: "category", "misc" %}
+{% include writing-list.html posts=writing %}

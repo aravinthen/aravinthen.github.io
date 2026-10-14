@@ -3,7 +3,7 @@ layout: default
 title: Home
 ---
 <section class="about">
-  <h2>Purpose</h2> 
+  <h1>Purpose</h1> 
   <p>
       This is a living research log where I document papers I read, technical concepts I study, and progress on my own research projects.
   </p>
@@ -15,16 +15,26 @@ title: Home
   </p>
 </section>
 
-<section>
-  <h2>Recent Posts</h2>
-  <ul>
-    {% for post in site.posts limit:5 %}
-      <li>
-        <a href="{{ post.url }}">{{ post.title }}</a>
-        <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
-      </li>
-    {% endfor %}
-  </ul>
+<section aria-labelledby="projects-heading">
+  <h2 id="projects-heading">Research projects</h2>
+  {% assign projects = site.posts | where: 'category', 'projects' %}
+  {% include writing-list.html posts=projects %}
+  <a class="section-link" href="{{ '/projects/' | relative_url }}">All projects →</a>
 </section>
-
-
+<section aria-labelledby="technical-heading">
+  <h2 id="technical-heading">Technical writing</h2>
+  {% assign technical = site.posts | where: 'category', 'technical' | slice: 0, 5 %}
+  {% include writing-list.html posts=technical %}
+  <a class="section-link" href="{{ '/technical/' | relative_url }}">All technical notes →</a>
+</section>
+<section aria-labelledby="writing-heading">
+  <h2 id="writing-heading">Recent writing</h2>
+  {% assign recent = site.posts | slice: 0, 5 %}
+  {% include writing-list.html posts=recent %}
+</section>
+<section aria-labelledby="activity-heading">
+  <h2 id="activity-heading">Recent research activity</h2>
+  {% assign activity = site.log | sort: 'date' | reverse | slice: 0, 5 %}
+  {% include writing-list.html posts=activity %}
+  <p class="section-link"><a href="{{ '/log/' | relative_url }}">Research logbook →</a> · <a href="{{ '/log/timelines/' | relative_url }}">Browse by topic →</a></p>
+</section>
