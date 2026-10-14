@@ -9,17 +9,24 @@ layout: default
 {% if first_line contains '<h1' %}{% assign existing_title = true %}{% elsif first_line contains '<h2' and first_heading_text == page_title %}{% assign existing_title = true %}{% endif %}
 <article class="research-article">
   <header class="article-header">
-    {% for section in site.data.navigation %}{% if section.section == page.category %}<a class="parent-link" href="{{ section.url | relative_url }}">← {{ section.title }}</a>{% endif %}{% endfor %}
+    {% if page.category == 'projects' or page.category == 'technical' %}{% include research-navigation.html %}{% else %}{% for section in site.data.navigation %}{% if section.section == page.category %}<a class="parent-link" href="{{ section.url | relative_url }}">← {{ section.title }}</a>{% endif %}{% endfor %}{% if page.category == 'misc' %}<a class="parent-link" href="{{ '/misc/' | relative_url }}">← Miscellaneous</a>{% endif %}{% endif %}
     {% unless existing_title %}<h1>{{ page.title }}</h1>{% endunless %}
     <div class="article-meta"><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%d %B %Y' }}</time>{% if page.status %}<span>{{ page.status | escape }}</span>{% endif %}{% if page.topics %}<span>{{ page.topics | join: ' · ' | escape }}</span>{% endif %}</div>
   </header>
   <details class="article-toc" hidden><summary>On this page</summary><nav aria-label="Table of contents"><ol></ol></nav></details>
   <div class="article-content">{% if first_line contains '<h1' %}{% assign opening_heading = content | split: '</h1>' | first | append: '</h1>' %}{{ opening_heading }}{{ content | remove_first: opening_heading | replace: '<h1', '<h2' | replace: '</h1>', '</h2>' }}{% elsif existing_title %}{{ content | replace_first: '<h2', '<h1' | replace_first: '</h2>', '</h1>' }}{% else %}{{ content | replace: '<h1', '<h2' | replace: '</h1>', '</h2>' }}{% endif %}</div>
   {% assign repository = page.repository | default: metadata.repository %}
-  {% if repository %}<p class="article-links"><a href="{{ repository | escape }}">Experimental implementation ↗</a></p>{% endif %}
+  {% if repository %}{% unless content contains repository %}<p class="article-links"><a href="{{ repository | escape }}">Experimental implementation ↗</a></p>{% endunless %}{% endif %}
   {% assign related = page.related_notes | default: metadata.related_notes %}
   {% if related.size > 0 %}<aside class="article-related"><h2>Related articles</h2><ul>{% for note in related %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul></aside>{% endif %}
-  {% if page.category == 'technical' or page.category == 'literature' %}
+  {% if page.category == 'projects' %}{% include programme-notes.html project=page existing_content=content %}{% endif %}
+  {% if page.category == 'technical' and page.research_programme %}
+    {% assign programme = site.posts | where: 'category', 'projects' | where: 'research_programme', page.research_programme | first %}
+    {% assign programme_metadata = site.data.writing[programme.url] %}
+    {% assign implementation = programme.repository | default: programme_metadata.repository %}
+    {% if implementation %}<p class="article-links"><a href="{{ implementation | escape }}">Experimental implementation ↗</a></p>{% endif %}
+  {% endif %}
+  {% if page.category == 'literature' %}
   {% for project in site.posts %}{% assign project_data = site.data.writing[project.url] %}{% for note in project_data.related_notes %}{% if note.url == page.url %}<p class="article-links"><a href="{{ project.url | relative_url }}">← {{ project.title }}</a>{% if project_data.repository %} · <a href="{{ project_data.repository }}">Experimental implementation ↗</a>{% endif %}</p>{% endif %}{% endfor %}{% endfor %}
   {% endif %}
   {% assign series = page.series | default: metadata.series %}

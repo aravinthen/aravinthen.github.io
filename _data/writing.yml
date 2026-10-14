@@ -42,13 +42,6 @@
   series: Notes on Technical AI Safety
 /2026/01/25/deep_reinforcement/:
   repository: https://github.com/aravinthen/deep_rl_experiments
-  related_notes:
-  - title: Lessons from classical reinforcement learning
-    url: /2026/02/28/lessons_from_classical_rl/
-  - title: From REINFORCE to Actor-Critic
-    url: /2026/04/18/reinforce/
-  - title: Proximal Policy Optimization, layer by layer
-    url: /2026/05/30/ppo/
 /2026/10/13/bluedot/:
   related_notes:
   - title: Be careful what you wish for

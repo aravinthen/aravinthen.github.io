@@ -2,6 +2,7 @@
 title: "From REINFORCE to Actor-Critic"
 category: technical
 math: True
+research_programme: deep-reinforcement-learning
 ---
 
 # A War Story: from REINFORCE to Actor-Critic

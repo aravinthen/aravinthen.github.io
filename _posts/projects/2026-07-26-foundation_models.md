@@ -1,6 +1,7 @@
 ---
 title: Foundation models and post-training
 category: projects
+research_programme: foundation-models-post-training
 ---
 
 I have spent six months dedicated to classical and deep reinforcement learning, with another month exploring trends in autonomous systems in modern artificial intelligence research. I'm now at a point where I have

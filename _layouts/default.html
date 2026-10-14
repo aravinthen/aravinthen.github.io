@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>{% if page.title %}{{ page.title | escape }} · {% endif %}{{ site.title | escape }}</title>
+  {% if page.redirect_to %}<meta http-equiv="refresh" content="0; url={{ page.redirect_to | relative_url }}">{% endif %}
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="canonical" href="{{ page.redirect_to | default: page.url | absolute_url }}">
   <meta name="description" content="{{ page.description | default: site.description | escape }}">
   <meta property="og:title" content="{{ page.title | default: site.title | escape }}">
-  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:url" content="{{ page.redirect_to | default: page.url | absolute_url }}">
   <meta property="og:type" content="{% if page.collection == 'posts' %}article{% else %}website{% endif %}">
   <meta property="og:description" content="{{ page.description | default: site.description | escape }}">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
@@ -24,6 +25,7 @@
       <p class="subtitle">{{ site.description }}</p>
       {% assign active_section = page.section | default: page.category %}
       {% unless active_section %}{% assign active_section = page.url | split: '/' | slice: 1 | first | default: 'home' %}{% endunless %}
+      {% if active_section == 'projects' or active_section == 'technical' %}{% assign active_section = 'research' %}{% endif %}
       <nav class="section-nav" aria-label="Main navigation">
         {% for item in site.data.navigation %}
         <a href="{{ item.url | relative_url }}"{% if active_section == item.section %} class="active" aria-current="page"{% endif %}>{{ item.title }}</a>
@@ -32,7 +34,7 @@
     </header>
     <main id="content" tabindex="-1">{% if page.url == '/about/' %}{{ content | replace_first: '<h2', '<h1' | replace_first: '</h2>', '</h1>' }}{% else %}{{ content }}{% endif %}</main>
     <footer class="site-footer">
-      <nav aria-label="Footer"><a href="https://github.com/aravinthen">GitHub</a><a href="mailto:arre0raj@gmail.com">Email</a><a href="{{ '/feed.xml' | relative_url }}">RSS</a><a href="#top">Back to top ↑</a></nav>
+      <nav aria-label="Footer"><a href="https://github.com/aravinthen">GitHub</a><a href="mailto:arre0raj@gmail.com">Email</a><a href="{{ '/feed.xml' | relative_url }}">RSS</a><a href="{{ '/misc/' | relative_url }}"{% if page.category == 'misc' or page.url == '/misc/' %} aria-current="page"{% endif %}>Miscellaneous</a> <a href="#top">Back to top ↑</a></nav>
     </footer>
   </div>
   {% if page.math or content contains '\(' or content contains '\[' or content contains '$$' %}{% include mathjax.html %}{% endif %}

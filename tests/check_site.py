@@ -32,12 +32,12 @@ for path,page in pages.items():
   if u.fragment and target.suffix=='.html':
    parsed=pages.get(target) or Page(target.read_text())
    if unquote(u.fragment) not in parsed.ids:errors.append((str(path.relative_to(site)),ref+' [missing fragment]'))
-for route in ['','about','projects','technical','literature','misc','log','log/timelines']:
+for route in ['','about','projects','technical','research','literature','misc','log','log/timelines']:
  assert (site/route/'index.html').exists(),route
 posts=list(root.glob('_posts/**/*.md'));logs=list(root.glob('_log/*.md'))
 for p in posts+[root/'about/index.md']:
  old=subprocess.check_output(['git','show',f'{baseline}:{p.relative_to(root)}'],cwd=root)
- assert p.read_bytes()==old,p
+ assert re.sub(rb'(?m)^research_programme:.*\n',b'',p.read_bytes(),count=1)==old,p
 for p in logs:
  old=subprocess.check_output(['git','show',f'{baseline}:{p.relative_to(root)}'],cwd=root)
  assert re.sub(rb'(?m)^tags:.*$',b'tags: <tags>',old,count=1)==re.sub(rb'(?m)^tags:.*$',b'tags: <tags>',p.read_bytes(),count=1),p

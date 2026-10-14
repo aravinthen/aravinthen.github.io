@@ -1,0 +1,47 @@
+---
+layout: default
+title: Research
+section: research
+---
+<h1>Research</h1>
+<section aria-labelledby="programmes-heading">
+  <h2 id="programmes-heading">Research programmes</h2>
+  {% assign projects = site.posts | where: 'category', 'projects' %}
+  {% for post in projects %}
+    {% assign metadata = site.data.writing[post.url] %}
+    <section class="research-programme" id="{{ post.research_programme | default: post.slug }}" data-programme="{{ post.research_programme }}">
+      <header>
+        <h3 class="programme-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+        <div class="article-meta"><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%d %B %Y' }}</time>{% if post.status %}<span>{{ post.status | escape }}</span>{% endif %}{% if post.topics %}<span>{{ post.topics | join: ' · ' | escape }}</span>{% endif %}</div>
+      </header>
+      {% if post.summary %}
+        <p class="programme-excerpt">{{ post.summary | escape }}</p>
+      {% else %}
+        {% assign rendered = post.content | markdownify %}
+        {% if rendered contains '<p>' %}
+          {% assign extract = rendered | split: '<p>' | slice: 1, 1 | first | split: '</p>' | first | strip_html | normalize_whitespace | strip %}
+          <p class="programme-excerpt" aria-label="Article excerpt">{{ extract | truncate: 280, '…' | escape }}{% if extract.size <= 280 %}…{% endif %}</p>
+        {% endif %}
+      {% endif %}
+      {% assign repository = post.repository | default: metadata.repository %}
+      {% if repository %}<p class="programme-links"><a href="{{ repository | escape }}">Experimental implementation ↗</a></p>{% endif %}
+      {% include programme-notes.html project=post heading_level=4 %}
+      {% if metadata.related_notes.size > 0 %}
+      <details class="programme-related"><summary>Associated reading</summary><ul>{% for note in metadata.related_notes %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul></details>
+      {% endif %}
+    </section>
+  {% endfor %}
+</section>
+{% assign technical = site.posts | where: 'category', 'technical' %}
+{% assign independent = '' | split: ',' %}
+{% for note in technical %}
+  {% assign parents = '' | split: ',' %}
+  {% if note.research_programme %}{% assign parents = projects | where: 'research_programme', note.research_programme %}{% endif %}
+  {% if parents.size == 0 %}{% assign independent = independent | push: note %}{% endif %}
+{% endfor %}
+{% if independent.size > 0 %}
+<section aria-labelledby="independent-heading">
+  <h2 id="independent-heading">Independent technical notes</h2>
+  {% include writing-list.html posts=independent %}
+</section>
+{% endif %}

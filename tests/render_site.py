@@ -21,6 +21,9 @@ async def main():
    await page.route('https://cdn.jsdelivr.net/**',asset)
    while not queue.empty():
     f=queue.get_nowait();route='/'+str(f.relative_to(site));await page.goto('http://127.0.0.1:4000'+route)
+    if 'http-equiv="refresh"' in f.read_text():
+     await page.wait_for_url('**/research/')
+     await page.wait_for_load_state('load')
     if 'window.MathJax' in f.read_text():
      await page.wait_for_function('window.MathJax && window.MathJax.startup && window.MathJax.startup.promise')
      await page.evaluate('MathJax.startup.promise')

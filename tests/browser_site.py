@@ -23,9 +23,10 @@ with sync_playwright() as p:
  page.route('https://cdn.jsdelivr.net/**',cdn_asset)
  for width,height in [(1280,900),(390,844)]:
   page.set_viewport_size({'width':width,'height':height})
-  for route,active in [('/','Home'),('/about/','About'),('/projects/','Projects'),('/technical/','Technical notes'),('/literature/','Literature'),('/misc/','Misc'),('/log/','Log'),('/log/timelines/','Log'),('/2026/05/30/ppo/','Technical notes'),('/2026/10/03/bluedot4/','Literature'),('/log/2026-01-21/','Log')]:
+  for route,active in [('/',None),('/research/','Research'),('/about/','About'),('/projects/','Research'),('/technical/','Research'),('/literature/','Literature'),('/misc/',None),('/log/','Logbook'),('/log/timelines/','Logbook'),('/2026/05/30/ppo/','Research'),('/2026/10/03/bluedot4/','Literature'),('/log/2026-01-21/','Logbook')]:
    assert page.goto(base+route).status==200,route
-   assert page.locator('.section-nav [aria-current=page]').inner_text()==active,(route,active)
+   if active: assert page.locator('.section-nav [aria-current=page]').inner_text()==active,(route,active)
+   else: assert page.locator('.section-nav [aria-current=page]').count()==0
    assert page.locator('main').inner_text().strip(),route
    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'),(width,route,'horizontal overflow')
    if route in ['/2026/05/30/ppo/','/2026/10/03/bluedot4/']:

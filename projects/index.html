@@ -2,6 +2,7 @@
 layout: default
 title: Research Projects
 section: projects
+redirect_to: /research/
 ---
 
 <h1>Research Projects</h1>
@@ -10,16 +11,4 @@ section: projects
 A list of the research projects that I'm working on. 
 </p>
 
-{% assign projects = site.posts | where: 'category', 'projects' %}
-{% for post in projects %}
-{% assign metadata = site.data.writing[post.url] %}
-<section class="project-entry">
-  <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-  <div class="article-meta"><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%d %B %Y' }}</time>{% if post.status %}<span>{{ post.status | escape }}</span>{% endif %}{% if post.topics %}<span>{{ post.topics | join: ' · ' | escape }}</span>{% endif %}</div>
-  {% if post.summary %}<p>{{ post.summary | escape }}</p>{% endif %}
-  {% assign repository = post.repository | default: metadata.repository %}
-  {% if repository %}<p><a href="{{ repository | escape }}">Experimental implementation ↗</a></p>{% endif %}
-  {% assign notes = post.related_notes | default: metadata.related_notes %}
-  {% if notes.size > 0 %}<h3>Associated notes</h3><ul>{% for note in notes %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul>{% endif %}
-</section>
-{% endfor %}
+<p><a href="{{ '/research/' | relative_url }}">Research →</a></p>

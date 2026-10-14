@@ -1,0 +1,8 @@
+<nav class="research-breadcrumbs" aria-label="Research navigation">
+  <a href="{{ '/research/' | relative_url }}">← Research</a>
+  {% if page.category == 'technical' and page.research_programme %}
+    {% assign programmes = site.posts | where: 'category', 'projects' | where: 'research_programme', page.research_programme %}
+    {% assign programme = programmes | first %}
+    {% if programme %}<span aria-hidden="true">/</span><a href="{{ programme.url | relative_url }}">{{ programme.title }}</a>{% endif %}
+  {% endif %}
+</nav>

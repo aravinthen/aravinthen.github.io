@@ -1,0 +1,11 @@
+{% if include.project.research_programme %}
+  {% assign programme_notes = site.posts | where: 'category', 'technical' | where: 'research_programme', include.project.research_programme | sort: 'date' %}
+  {% assign visible_notes = '' | split: ',' %}
+  {% for note in programme_notes %}{% unless include.existing_content contains note.url %}{% assign visible_notes = visible_notes | push: note %}{% endunless %}{% endfor %}
+  {% if visible_notes.size > 0 %}
+  <div class="programme-notes">
+    <h{{ include.heading_level | default: 2 }}>Technical notes</h{{ include.heading_level | default: 2 }}>
+    {% include writing-list.html posts=visible_notes %}
+  </div>
+  {% endif %}
+{% endif %}
