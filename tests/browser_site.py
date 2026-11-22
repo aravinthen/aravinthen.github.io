@@ -3,7 +3,7 @@ Starts an isolated local server unless --base-url / SITE_URL is supplied.
 """
 from collections import Counter
 import json
-from urllib.parse import urlencode, parse_qs, urlsplit
+from urllib.parse import urlencode, urlsplit
 from support import Inventory, args, server, launch, verified_cdn, tree
 
 def browser_checks(source, site, base_url=None):
@@ -79,39 +79,31 @@ def browser_checks(source, site, base_url=None):
                 query=urlencode([('tag',t) for t in dual.meta['tags']])
                 visit(inventory.baseurl+'/log/?'+query)
                 visible(sum(set(dual.meta['tags'])<=set(d.meta['tags']) for d in inventory.logs))
-            for key,count in inventory.project_counts.items():
-                visit(inventory.baseurl+'/log/?'+urlencode({'project':key}))
-                visible(count)
-                chip=page.locator(f'#log-project-filters input[value="{key}"]')
+            project=next((p.meta.get('research_programme') for p in inventory.projects if inventory.counts[p.meta.get('research_programme')]),None)
+            assert page.locator('#log-project-filters').count()==0
+            if project:
+                visit(inventory.baseurl+'/log/?'+urlencode({'project':project}))
+                visible(inventory.counts[project])
+                chip=page.locator(f'#log-tag-filters input[value="{project}"]')
                 assert chip.is_checked()
-                assert f'({count})' in chip.locator('..').inner_text()
-                actual=set(page.locator('.log-item:not([hidden])').evaluate_all('(els)=>els.map(e=>e.dataset.url)'))
-                assert actual=={d.url for d in inventory.logs if key in d.meta.get('projects', [])},key
-                visit(inventory.baseurl+f'/log/timelines/#project-{key}')
-                project_timeline=page.locator(f'#project-{key}')
-                assert project_timeline.evaluate('(e)=>e.open')
-                assert project_timeline.locator('li').count()==count
-            if len(inventory.project_counts)>=2:
-                first,second=list(inventory.project_counts)[:2]
-                sample=next(d for d in inventory.logs if first in d.meta.get('projects', []))
-                tag=sample.meta['tags'][0]
+                sample=next(d for d in inventory.logs if project in d.meta['tags'])
                 month=sample.day[:7]
-                params={'project':[first,second],'tag':tag,'month':month,'q':tag}
+                query=sample.meta['tags'][0]
+                params={'tag':list(dict.fromkeys([project,query])),'month':month,'q':query}
                 visit(inventory.baseurl+'/log/?'+urlencode(params,doseq=True))
-                matches=[d for d in inventory.logs if d.day.startswith(month) and tag in d.meta['tags']]
-                visible(sum(bool({first,second}.intersection(d.meta.get('projects', []))) for d in matches))
-                chip=page.locator(f'#log-project-filters input[value="{first}"]')
-                page.locator(f'#log-project-filters input[value="{second}"]').uncheck()
-                visible(sum(first in d.meta.get('projects', []) for d in matches))
-                assert parse_qs(urlsplit(page.url).query)['project']==[first]
+                expected=sum(d.day.startswith(month) and set(params['tag'])<=set(d.meta['tags']) for d in inventory.logs)
+                visible(expected)
                 page.locator('#log-clear-filters').click()
                 visible(len(inventory.logs))
                 assert not urlsplit(page.url).query
                 page.go_back()
-                visible(sum(first in d.meta.get('projects', []) for d in matches))
+                visible(expected)
                 assert chip.is_checked()
                 page.go_forward()
                 visible(len(inventory.logs))
+                visit(inventory.baseurl+f'/log/timelines/#project-{project}')
+                anchor=project if project in inventory.canonical else f'tag:{project}'
+                assert page.locator(f'[id="{anchor}"]').evaluate('(e)=>e.open')
             month_counts=Counter(d.day[:7] for d in inventory.logs)
             visit(inventory.baseurl+'/log/')
             for month,count in month_counts.items():
@@ -144,7 +136,9 @@ def browser_checks(source, site, base_url=None):
                 related=page.locator('.log-related a')
                 assert all(url!=page.url.removeprefix(base) for url in related.evaluate_all('(els)=>els.map(e=>e.getAttribute("href"))'))
             visit(inventory.baseurl+'/log/timelines/')
-            for tag,count in inventory.counts.items():assert page.locator(f'#{tag} .log-timeline-list li').count()==count
+            for tag,count in inventory.counts.items():
+                anchor=tag if tag in inventory.canonical else f'tag:{tag}'
+                assert page.locator(f'[id="{anchor}"] .log-timeline-list li').count()==count
             if 'post-training' in inventory.counts:
                 visit(inventory.baseurl+'/log/timelines/#post-training-reasoning')
                 assert page.locator('#post-training').evaluate('(e)=>e.open')
@@ -161,7 +155,7 @@ def browser_checks(source, site, base_url=None):
                 assert page.locator('.log-item:not([hidden])').count()>0,'title/tag fallback failed'
             assert not errors,errors
         browser.close()
-    print('PASS: current navigation, responsive/focus/font/TOC checks, full text/fallback, all tags, aliases and projects, combined filters and history, months, calendar, timelines, representative rendering')
+    print('PASS: current navigation, responsive/focus/font/TOC checks, full text/fallback, all tags and aliases, combined filters and history, months, calendar, timelines, representative rendering')
 
 def audit_page(page,file,site,base,baseurl):
     relative=file.relative_to(site).as_posix()

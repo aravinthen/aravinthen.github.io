@@ -1,0 +1,15 @@
+{% assign programme_tag = include.id %}
+{% if programme_tag %}
+  {% assign programme_logs = site.log | where_exp: 'entry', 'entry.tags contains programme_tag' | sort: 'date' | reverse %}
+  {% if programme_logs.size > 0 %}
+  {% assign topic = site.data.log_topics | where: 'slug', programme_tag | first %}
+  <section class="programme-logs">
+    <h2>Research logs</h2>
+    {% include writing-list.html posts=programme_logs %}
+    <p class="programme-links">
+      <a href="{{ '/log/' | relative_url }}?tag={{ programme_tag | url_encode }}">Filter logbook</a>
+      · <a href="{{ '/log/timelines/' | relative_url }}#{% unless topic %}tag:{% endunless %}{{ programme_tag }}">Timeline</a>
+    </p>
+  </section>
+  {% endif %}
+{% endif %}

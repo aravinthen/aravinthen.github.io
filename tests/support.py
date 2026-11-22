@@ -79,16 +79,9 @@ class Inventory:
             for alias in topic.get('aliases', []):
                 assert alias not in self.aliases and alias not in self.canonical, f'ambiguous alias {alias}'
                 self.aliases[alias] = topic['slug']
-        registry_path = self.root / '_data/research_projects.yml'
-        self.registry = load_yaml(registry_path.read_text(), registry_path)
-        assert isinstance(self.registry, dict), f'{registry_path}: expected a mapping of project IDs'
-        for key, project in self.registry.items():
-            assert isinstance(key, str) and re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', key), f'{registry_path}: invalid ID {key}'
-            assert isinstance(project, dict) and isinstance(project.get('title'), str) and project['title'].strip(), f'{registry_path}: {key} needs a title'
         self.project_drafts = []
         self.posts = self.documents('_posts', posts=True)
         self.logs = self.documents('_log')
-        self.project_counts = Counter(key for doc in self.logs for key in doc.meta.get('projects', []))
         self.counts = Counter(tag for doc in self.logs for tag in doc.meta['tags'])
         self.projects = [p for p in self.posts if p.category == 'projects']
         self.technical = [p for p in self.posts if p.category == 'technical']
@@ -111,13 +104,10 @@ class Inventory:
                 assert meta.get('layout') == 'log' and 'date' in meta, f'{path}: layout: log and date required'
                 assert day == match[1], f'{path}: date must agree with filename'
                 tags = meta.get('tags')
-                assert isinstance(tags, list) and 1 <= len(tags) <= 2, f'{path}: choose one or two tags'
-                assert all(isinstance(t, str) and t in self.canonical for t in tags), f'{path}: noncanonical tags {tags}'
+                assert isinstance(tags, list) and tags, f'{path}: tags must be a nonempty list'
+                assert all(isinstance(t, str) and re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', t) for t in tags), f'{path}: invalid tag slugs {tags}'
+                assert not set(tags).intersection(self.aliases), f'{path}: use canonical slugs instead of aliases {tags}'
                 assert len(set(tags)) == len(tags), f'{path}: duplicate tags'
-                projects = meta.get('projects', [])
-                assert isinstance(projects, list), f'{path}: projects must be a list'
-                assert all(isinstance(key, str) and key in self.registry for key in projects), f'{path}: noncanonical projects {projects}'
-                assert len(projects) == len(set(projects)), f'{path}: duplicate projects'
             category = meta.get('category', '')
             if posts:
                 assert category in {'projects', 'technical', 'literature', 'misc'}, f'{path}: valid category required'

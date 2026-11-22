@@ -18,15 +18,6 @@ layout: default
   </div>
   {% endif %}
 
-  {% if page.projects.size > 0 %}
-  <div class="log-entry-tags" aria-label="Entry projects">
-    <span>Projects:</span>
-    {% for id in page.projects %}
-      <a class="log-tag-link" href="{{ '/log/' | relative_url }}?project={{ id | url_encode }}">{{ site.data.research_projects[id].title | escape }}</a>
-    {% endfor %}
-  </div>
-  {% endif %}
-
   {% assign logs = site.log | sort: 'date' %}
   {% assign previous_log = nil %}
   {% assign next_log = nil %}
@@ -65,13 +56,14 @@ layout: default
   {% endfor %}
 
   {% assign newest_first = logs | reverse %}
-  {% assign dimensions = 'projects,tags' | split: ',' %}
-  {% for dimension in dimensions %}
+  {% assign programme_tags = site.posts | where: 'category', 'projects' | map: 'research_programme' %}
+  {% for pass in (1..2) %}
     {% for entry in newest_first %}
       {% if related_urls.size >= 3 %}{% break %}{% endif %}
       {% if entry.url == page.url or related_urls contains entry.url %}{% continue %}{% endif %}
-      {% for value in page[dimension] %}
-        {% if entry[dimension] contains value %}
+      {% for value in page.tags %}
+        {% if pass == 1 %}{% unless programme_tags contains value %}{% continue %}{% endunless %}{% endif %}
+        {% if entry.tags contains value %}
           {% assign related_urls = related_urls | push: entry.url %}
           {% break %}
         {% endif %}

@@ -23,16 +23,10 @@ def growth(root=ROOT,browser=False):
         def publish(path,metadata,body='Fixture text.\n'):
             path=source/path;path.parent.mkdir(parents=True,exist_ok=True)
             path.write_text('---\n'+yaml.safe_dump(metadata,sort_keys=False)+'---\n'+body)
-        registry_path=source/'_data/research_projects.yml'
-        registry=yaml.safe_load(registry_path.read_text())
-        existing_project=next(iter(registry))
         fixture_project='maintenance-fixture'
-        registry[fixture_project]={'title':'Maintenance fixture project'}
-        registry_path.write_text(yaml.safe_dump(registry,sort_keys=False))
         for offset,tags in [(0,[tag]),(1,[tag,second])]:
             day=(first+timedelta(days=offset)).isoformat()
-            projects=[fixture_project, existing_project] if offset else [fixture_project]
-            publish(f'_log/{day}.md',{'layout':'log','title':'Maintenance fixture','date':day,'tags':tags,'projects':projects})
+            publish(f'_log/{day}.md',{'layout':'log','title':'Maintenance fixture','date':day,'tags':tags+[fixture_project, 'content']})
         programme=next(p.meta['research_programme'] for p in inventory.projects if p.meta.get('research_programme'))
         series=next(d.series for d in inventory.literature if d.series)
         first_post=date.fromisoformat(min(p.day for p in inventory.posts))-timedelta(days=20)
@@ -41,7 +35,7 @@ def growth(root=ROOT,browser=False):
             publish(f'_posts/{category}/{day}-{slug}.md',{'title':slug,'category':category,**extra})
         post(0,'technical','fixture-associated',research_programme=programme)
         post(1,'technical','fixture-independent')
-        post(2,'projects','fixture-programme',research_programme='maintenance-fixture')
+        post(2,'projects','fixture-programme',research_programme=fixture_project)
         post(3,'literature','fixture-series',series=series)
         post(4,'literature','fixture-unaffiliated')
         # An unmatched programme is intentionally indexed as independent.
@@ -56,10 +50,10 @@ def growth(root=ROOT,browser=False):
         fixture_path=f'_log/{day}.md'
         fixture_meta={'layout':'log','title':'New taxonomy fixture','date':day,'tags':['maintenance-fixture-topic']}
         for invalid, message in [
-            ({'tags':['maintenance-old-topic']}, 'noncanonical tags'),
-            ({'projects':['unknown-project']}, 'noncanonical projects'),
-            ({'projects':[fixture_project, fixture_project]}, 'duplicate projects'),
-            ({'projects':fixture_project}, 'projects must be a list'),
+            ({'tags':['maintenance-old-topic']}, 'instead of aliases'),
+            ({'tags':['Invalid Slug']}, 'invalid tag slugs'),
+            ({'tags':[fixture_project, fixture_project]}, 'duplicate tags'),
+            ({'tags':fixture_project}, 'tags must be a nonempty list'),
         ]:
             publish(fixture_path,{**fixture_meta,**invalid})
             try:
@@ -69,7 +63,7 @@ def growth(root=ROOT,browser=False):
             else:
                 raise AssertionError(f'Invalid metadata accepted: {invalid}')
         explicit=first.isoformat()
-        publish(fixture_path,{**fixture_meta,'related':[explicit, day, explicit],'projects':[existing_project]},'Fixture search sentinel.\n')
+        publish(fixture_path,{**fixture_meta,'related':[explicit, day, explicit]},'Fixture search sentinel.\n')
         build(source,output)
         grown=validate(source,output)
         assert len(grown.logs)==len(inventory.logs)+3
@@ -77,7 +71,7 @@ def growth(root=ROOT,browser=False):
         if browser:
             from browser_site import browser_checks
             browser_checks(source,output)
-    print('PASS: new daily/dual-tag logs, programme note, independent/orphan notes, project, series/unaffiliated reviews, edited article, expanded taxonomy and project registry, and invalid metadata rejection; fixtures removed')
+    print('PASS: new daily/dual-tag logs, programme note, independent/orphan notes, project, series/unaffiliated reviews, edited article, custom tags and project tag, and invalid metadata rejection; fixtures removed')
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
