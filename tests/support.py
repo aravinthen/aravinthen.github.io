@@ -11,6 +11,7 @@ from pathlib import Path
 import hashlib
 import mimetypes
 import os
+import re
 import shlex
 import subprocess
 import tempfile
@@ -78,17 +79,24 @@ class Inventory:
             for alias in topic.get('aliases', []):
                 assert alias not in self.aliases and alias not in self.canonical, f'ambiguous alias {alias}'
                 self.aliases[alias] = topic['slug']
+        registry_path = self.root / '_data/research_projects.yml'
+        self.registry = load_yaml(registry_path.read_text(), registry_path)
+        assert isinstance(self.registry, dict), f'{registry_path}: expected a mapping of project IDs'
+        for key, project in self.registry.items():
+            assert isinstance(key, str) and re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', key), f'{registry_path}: invalid ID {key}'
+            assert isinstance(project, dict) and isinstance(project.get('title'), str) and project['title'].strip(), f'{registry_path}: {key} needs a title'
+        self.project_drafts = []
         self.posts = self.documents('_posts', posts=True)
         self.logs = self.documents('_log')
+        self.project_counts = Counter(key for doc in self.logs for key in doc.meta.get('projects', []))
         self.counts = Counter(tag for doc in self.logs for tag in doc.meta['tags'])
         self.projects = [p for p in self.posts if p.category == 'projects']
         self.technical = [p for p in self.posts if p.category == 'technical']
         self.literature = [p for p in self.posts if p.category == 'literature']
-        ids = [p.meta['research_programme'] for p in self.projects if p.meta.get('research_programme')]
+        ids = [p.meta['research_programme'] for p in self.projects + self.project_drafts if p.meta.get('research_programme')]
         assert len(ids) == len(set(ids)), 'research programme IDs must be unique on projects'
 
     def documents(self, folder, posts=False):
-        import re
         result = []
         for path in sorted((self.root / folder).rglob('*.md')):
             meta, body = front_matter(path)
@@ -106,10 +114,10 @@ class Inventory:
                 assert isinstance(tags, list) and 1 <= len(tags) <= 2, f'{path}: choose one or two tags'
                 assert all(isinstance(t, str) and t in self.canonical for t in tags), f'{path}: noncanonical tags {tags}'
                 assert len(set(tags)) == len(tags), f'{path}: duplicate tags'
-            if meta.get('published') is False:
-                continue
-            if posts and not self.config.get('future') and day > datetime.now(timezone.utc).date().isoformat():
-                continue
+                projects = meta.get('projects', [])
+                assert isinstance(projects, list), f'{path}: projects must be a list'
+                assert all(isinstance(key, str) and key in self.registry for key in projects), f'{path}: noncanonical projects {projects}'
+                assert len(projects) == len(set(projects)), f'{path}: duplicate projects'
             category = meta.get('category', '')
             if posts:
                 assert category in {'projects', 'technical', 'literature', 'misc'}, f'{path}: valid category required'
@@ -123,7 +131,14 @@ class Inventory:
             series = meta.get('series') or self.writing.get(permalink, {}).get('series', '')
             for key in ['research_programme', 'series']:
                 assert not meta.get(key) or isinstance(meta[key], str), f'{path}: {key} must be a string'
-            result.append(Document(path, meta, body, url, day, category, series))
+            doc = Document(path, meta, body, url, day, category, series)
+            if meta.get('published') is False:
+                if category == 'projects':
+                    self.project_drafts.append(doc)
+                continue
+            if posts and not self.config.get('future') and day > datetime.now(timezone.utc).date().isoformat():
+                continue
+            result.append(doc)
         assert len({d.url for d in result}) == len(result), f'duplicate URLs in {folder}'
         return sorted(result, key=lambda d:(d.day, d.path.name))
 

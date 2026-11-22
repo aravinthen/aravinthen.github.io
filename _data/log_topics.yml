@@ -35,7 +35,6 @@
   tags:
   - multi-agent
   aliases:
-  - game-theory
   - marl
   - multi-agent-rl
 - title: Systems and engineering
@@ -72,3 +71,11 @@
   - nothing
   - literature-review
   - life-changes
+- title: BlueDot AI Safety Project
+  slug: bluedot-project
+  tags:
+  - bluedot-project
+- title: Game Theory and Mechanism Design
+  slug: game-theory
+  tags:
+  - game-theory

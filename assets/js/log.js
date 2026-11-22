@@ -1,4 +1,4 @@
-/* Client-side logbook search, topic filtering, history, and activity calendar.
+/* Client-side logbook search, topic and project filtering, history, and activity calendar.
    All entry content is sourced from Jekyll's site.log collection. */
 (function () {
   'use strict';
@@ -8,7 +8,6 @@
 
   const search = document.getElementById('log-search');
   const monthSelect = document.getElementById('log-month-select');
-  const tagContainer = document.getElementById('log-tag-filters');
   const status = document.getElementById('log-result-status');
   const warning = document.getElementById('log-search-warning');
   const empty = document.getElementById('log-empty');
@@ -21,6 +20,7 @@
       month: element.dataset.month,
       title: element.dataset.title,
       tags: element.dataset.tags ? element.dataset.tags.split('|').filter(Boolean) : [],
+      projects: element.dataset.projects ? element.dataset.projects.split('|').filter(Boolean) : [],
       excerpt: (element.querySelector('.log-item-excerpt') || {}).textContent || ''
     };
   });
@@ -29,46 +29,47 @@
     return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   }
 
-  function displayTag(value) {
-    const special = { ai: 'AI', rl: 'RL', llm: 'LLM', marl: 'MARL', ppo: 'PPO', rlhf: 'RLHF' };
-    return value.replace(/[_-]/g, ' ').split(' ').map(function (word) {
-      const lower = word.toLowerCase();
-      return special[lower] || (word.charAt(0).toUpperCase() + word.slice(1));
-    }).join(' ');
-  }
-
-  // Tags are derived from the current archive, not from site.tags (which
-  // represents posts rather than this custom Jekyll collection).
   const taxonomy = JSON.parse(document.getElementById('log-taxonomy').textContent);
+  const projects = JSON.parse(document.getElementById('log-projects').textContent);
+  const projectTitles = new Map(Object.entries(projects).map(function ([id, project]) {
+    return [id, project.title];
+  }));
   const topicTitles = new Map(taxonomy.map(function (topic) { return [topic.slug, topic.title]; }));
-  const canonicalTags = new Set(taxonomy.map(function (topic) { return topic.slug; }));
   const aliases = new Map();
   taxonomy.forEach(function (topic) { (topic.aliases || []).forEach(function (alias) { aliases.set(alias, topic.slug); }); });
-  const counts = new Map();
-  rows.forEach(function (row) {
-    row.tags.forEach(function (tag) { if (canonicalTags.has(tag)) counts.set(tag, (counts.get(tag) || 0) + 1); });
-  });
-  const checkboxes = new Map();
-  Array.from(counts.keys()).sort(function (a, b) {
-    return counts.get(b) - counts.get(a) || a.localeCompare(b);
-  }).forEach(function (tag) {
-    const label = document.createElement('label');
-    label.className = 'log-filter-chip';
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.value = tag;
-    input.name = 'tag';
-    const caption = document.createElement('span');
-    caption.textContent = (topicTitles.get(tag) || displayTag(tag)) + ' (' + counts.get(tag) + ')';
-    label.append(input, caption);
-    tagContainer.appendChild(label);
-    checkboxes.set(tag, input);
-    input.addEventListener('change', function () { update(true); });
-  });
 
-  function selectedTags() {
-    return Array.from(checkboxes).filter(function (pair) { return pair[1].checked; })
-      .map(function (pair) { return pair[0]; });
+  function makeFilters(containerId, name, field, titles) {
+    const container = document.getElementById(containerId);
+    const counts = new Map();
+    rows.forEach(function (row) {
+      row[field].forEach(function (id) {
+        if (titles.has(id)) counts.set(id, (counts.get(id) || 0) + 1);
+      });
+    });
+    return Array.from(counts.keys()).sort(function (a, b) {
+      return counts.get(b) - counts.get(a) || a.localeCompare(b);
+    }).map(function (id) {
+      const label = document.createElement('label');
+      label.className = 'log-filter-chip';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = id;
+      input.name = name;
+      const caption = document.createElement('span');
+      caption.textContent = titles.get(id) + ' (' + counts.get(id) + ')';
+      label.append(input, caption);
+      container.appendChild(label);
+      input.addEventListener('change', function () { update(true, true); });
+      return input;
+    });
+  }
+
+  const tagFilters = makeFilters('log-tag-filters', 'tag', 'tags', topicTitles);
+  const projectFilters = makeFilters('log-project-filters', 'project', 'projects', projectTitles);
+  const filters = tagFilters.concat(projectFilters);
+
+  function selected(inputs) {
+    return inputs.filter(function (input) { return input.checked; }).map(function (input) { return input.value; });
   }
 
   function readUrl() {
@@ -77,7 +78,9 @@
     const month = params.get('month') || '';
     monthSelect.value = Array.from(monthSelect.options).some(function (opt) { return opt.value === month; }) ? month : '';
     const requested = new Set(params.getAll('tag').map(function (tag) { return aliases.get(tag) || tag; }));
-    checkboxes.forEach(function (input, tag) { input.checked = requested.has(tag); });
+    tagFilters.forEach(function (input) { input.checked = requested.has(input.value); });
+    const requestedProjects = new Set(params.getAll('project'));
+    projectFilters.forEach(function (input) { input.checked = requestedProjects.has(input.value); });
   }
 
   function writeUrl(push) {
@@ -85,9 +88,10 @@
     url.searchParams.delete('q');
     url.searchParams.delete('month');
     url.searchParams.delete('tag');
+    url.searchParams.delete('project');
     if (search.value.trim()) url.searchParams.set('q', search.value.trim());
     if (monthSelect.value) url.searchParams.set('month', monthSelect.value);
-    selectedTags().forEach(function (tag) { url.searchParams.append('tag', tag); });
+    filters.forEach(function (input) { if (input.checked) url.searchParams.append(input.name, input.value); });
     if (url.href !== window.location.href) {
       window.history[push ? 'pushState' : 'replaceState'](null, '', url.pathname + url.search + url.hash);
     }
@@ -120,9 +124,10 @@
     const currentRevision = ++revision;
     const query = normalise(search.value.trim());
     const words = query.split(/\s+/).filter(Boolean);
-    const tagSelection = selectedTags();
+    const tagSelection = selected(tagFilters);
+    const projectSelection = selected(projectFilters);
     const selectedMonth = monthSelect.value;
-    const isFiltering = words.length > 0 || tagSelection.length > 0 || Boolean(selectedMonth);
+    const isFiltering = words.length > 0 || tagSelection.length > 0 || projectSelection.length > 0 || Boolean(selectedMonth);
     let bodyIndex = null;
 
     if (words.length) bodyIndex = await loadFullText();
@@ -141,6 +146,7 @@
         ' ' + (bodyIndex ? (bodyIndex.get(row.url) || '') : '');
       const matches = (!selectedMonth || row.month === selectedMonth) &&
         tagSelection.every(function (tag) { return row.tags.includes(tag); }) &&
+        (projectSelection.length === 0 || projectSelection.some(function (id) { return row.projects.includes(id); })) &&
         words.every(function (word) { return text.includes(word); });
       row.element.hidden = !matches;
       if (matches) {
@@ -174,9 +180,10 @@
   });
   monthSelect.addEventListener('change', function () { update(true, true); });
   document.getElementById('log-clear-filters').addEventListener('click', function () {
+    window.clearTimeout(debounceTimer);
     search.value = '';
     monthSelect.value = '';
-    checkboxes.forEach(function (input) { input.checked = false; });
+    filters.forEach(function (input) { input.checked = false; });
     update(true, true);
   });
   document.getElementById('log-expand-all').addEventListener('click', function () {
@@ -185,7 +192,7 @@
   document.getElementById('log-collapse-all').addEventListener('click', function () {
     monthSections.forEach(function (section) { section.open = false; });
   });
-  window.addEventListener('popstate', function () { readUrl(); update(false); });
+  window.addEventListener('popstate', function () { window.clearTimeout(debounceTimer); readUrl(); update(false); });
 
   // Render a compact, optional calendar. No additional data request is needed.
   const calendar = document.getElementById('log-calendar');

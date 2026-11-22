@@ -1,0 +1,11 @@
+bluedot-project:
+  title: BlueDot AI Safety Project
+  programme_title: AI Debate and Mechanism Design — BlueDot Project Sprint
+  focus: [AI debate, mechanism design, scalable oversight, post-training]
+hivemarket:
+  title: HIVEMARKET
+  focus: [multi-agent environments, mechanism design, information exchange, coordination, capabilities, misalignment]
+castalia-comonitoring:
+  title: Castalia / Co-monitoring
+  programme_title: "Castalia: Co-monitoring and Adversarial Post-training"
+  focus: [co-monitor design, persistent personalisation, automated red-teaming, joint and adversarial post-training]

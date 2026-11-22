@@ -85,3 +85,5 @@
   .log-filter-row { align-items: flex-start; }
   .log-result-bar { align-items: flex-start; }
 }
+
+.log-project-panel .log-filter-chip { border-style: dashed; }

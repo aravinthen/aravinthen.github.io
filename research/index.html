@@ -4,32 +4,28 @@ title: Research
 section: research
 ---
 <h1>Research</h1>
+{% assign projects = site.posts | where: 'category', 'projects' %}
+<section aria-labelledby="active-programmes-heading">
+  <h2 id="active-programmes-heading">Active research programmes</h2>
+  {% for project in site.data.research_projects %}
+    {% assign project_id = project[0] %}
+    {% assign published_project = projects | where: 'research_programme', project[0] | first %}
+    {% if published_project %}
+      {% include research-programme.html project=published_project %}
+    {% else %}
+      <section class="research-programme" id="{{ project[0] }}" data-programme="{{ project[0] }}">
+        <h3 class="programme-title">{{ project[1].programme_title | default: project[1].title | escape }}</h3>
+        {% include programme-log-links.html id=project_id %}
+      </section>
+    {% endif %}
+  {% endfor %}
+</section>
 <section aria-labelledby="programmes-heading">
-  <h2 id="programmes-heading">Projects</h2>
-  {% assign projects = site.posts | where: 'category', 'projects' %}
+  <h2 id="programmes-heading">Earlier projects</h2>
   {% for post in projects %}
-    {% assign metadata = site.data.writing[post.url] %}
-    <section class="research-programme" id="{{ post.research_programme | default: post.slug }}" data-programme="{{ post.research_programme }}">
-      <header>
-        <h3 class="programme-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-        <div class="article-meta"><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%d %B %Y' }}</time>{% if post.status %}<span>{{ post.status | escape }}</span>{% endif %}{% if post.topics %}<span>{{ post.topics | join: ' · ' | escape }}</span>{% endif %}</div>
-      </header>
-      {% if post.summary %}
-        <p class="programme-excerpt">{{ post.summary | escape }}</p>
-      {% else %}
-        {% assign rendered = post.content | markdownify %}
-        {% if rendered contains '<p>' %}
-          {% assign extract = rendered | split: '<p>' | slice: 1, 1 | first | split: '</p>' | first | strip_html | normalize_whitespace | strip %}
-          <p class="programme-excerpt" aria-label="Article excerpt">{{ extract | truncate: 280, '…' | escape }}{% if extract.size <= 280 %}…{% endif %}</p>
-        {% endif %}
-      {% endif %}
-      {% assign repository = post.repository | default: metadata.repository %}
-      {% if repository %}<p class="programme-links"><a href="{{ repository | escape }}">Experimental implementation ↗</a></p>{% endif %}
-      {% include programme-notes.html project=post heading_level=4 collapsible=true %}
-      {% if metadata.related_notes.size > 0 %}
-      <details class="programme-related"><summary>Associated reading</summary><ul>{% for note in metadata.related_notes %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul></details>
-      {% endif %}
-    </section>
+    {% unless site.data.research_projects[post.research_programme] %}
+      {% include research-programme.html project=post %}
+    {% endunless %}
   {% endfor %}
 </section>
 {% assign technical = site.posts | where: 'category', 'technical' %}

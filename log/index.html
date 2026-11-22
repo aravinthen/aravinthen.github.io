@@ -31,6 +31,10 @@ title: Logbook
       <summary>Filter by topic <span class="log-filter-hint">(multiple tags match together)</span></summary>
       <div id="log-tag-filters" class="log-filter-tags" aria-label="Topic filters"></div>
     </details>
+    <details class="log-tag-panel log-project-panel" open>
+      <summary>Filter by project <span class="log-filter-hint">(matches any selected project)</span></summary>
+      <div id="log-project-filters" class="log-filter-tags" aria-label="Project filters"></div>
+    </details>
     <p id="log-search-warning" class="log-filter-warning" hidden>Full-text search is unavailable; title and tag search still works.</p>
   </div>
 
@@ -60,7 +64,8 @@ title: Logbook
           data-date="{{ entry.date | date: '%Y-%m-%d' }}"
           data-month="{{ current_month }}"
           data-url="{{ entry.url | relative_url }}"
-          data-tags="{{ entry.tags | join: '|' | escape }}">
+          data-tags="{{ entry.tags | join: '|' | escape }}"
+          data-projects="{{ entry.projects | join: '|' | escape }}">
         <time class="log-item-date" datetime="{{ entry.date | date: '%Y-%m-%d' }}">{{ entry.date | date: '%d %b' }}</time>
         <div class="log-item-main">
           <a class="log-item-title" href="{{ entry.url | relative_url }}">{{ entry.title | default: 'Untitled entry' }}</a>
@@ -87,7 +92,7 @@ title: Logbook
     {% endif %}
   </div>
 
-  <p id="log-empty" class="log-empty" hidden>No entries match these filters. Try clearing a tag or changing your search.</p>
+  <p id="log-empty" class="log-empty" hidden>No entries match these filters. Try clearing a filter or changing your search.</p>
 
   <details class="log-calendar-panel">
     <summary>Activity calendar</summary>
@@ -96,7 +101,8 @@ title: Logbook
     <select id="log-calendar-year"></select>
     <div class="log-calendar-scroll"><div id="log-calendar" class="log-calendar" aria-label="Log entries by date"></div></div>
   </details>
-  <noscript><p>Enable JavaScript to use search, tag filters, and the activity calendar. All entries remain browsable by month above.</p></noscript>
+  <noscript><p>Enable JavaScript to use search, filters, and the activity calendar. All entries remain browsable by month above.</p></noscript>
 </section>
 <script type="application/json" id="log-taxonomy">{{ site.data.log_topics | jsonify }}</script>
+<script type="application/json" id="log-projects">{{ site.data.research_projects | jsonify }}</script>
 <script src="{{ '/assets/js/log.js' | relative_url }}" defer></script>

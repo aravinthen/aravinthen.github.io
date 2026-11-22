@@ -1,0 +1,5 @@
+<li>
+  <time datetime="{{ include.entry.date | date: '%Y-%m-%d' }}">{{ include.entry.date | date: '%d %b %Y' }}</time>
+  <a href="{{ include.entry.url | relative_url }}">{{ include.entry.title | default: 'Untitled entry' }}</a>
+  {% if include.entry.milestone %}<strong class="log-milestone">milestone</strong>{% endif %}
+</li>

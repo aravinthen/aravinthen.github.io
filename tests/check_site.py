@@ -43,10 +43,16 @@ def validate(source, site):
         doc=expected[row.attrs['data-url']]
         assert row.attrs['data-tags'].split('|')==doc.meta['tags'],doc.path
         assert row.attrs['data-date']==doc.day,doc.path
+        assert row.attrs['data-month']==doc.day[:7],doc.path
+        assert (row.attrs['data-projects'].split('|') if row.attrs['data-projects'] else [])==doc.meta.get('projects', []),doc.path
     actual_counts=Counter(tag for row in rows for tag in row.attrs['data-tags'].split('|'))
     assert actual_counts==inventory.counts,'tag counts do not match current logs'
     taxonomy=next(n for n in archive.walk() if n.attrs.get('id')=='log-taxonomy')
     assert json.loads(taxonomy.text)==inventory.topics,'client taxonomy differs from YAML'
+    actual_projects=Counter(key for row in rows for key in row.attrs['data-projects'].split('|') if key)
+    assert actual_projects==inventory.project_counts,'project counts do not match current logs'
+    registry=next(n for n in archive.walk() if n.attrs.get('id')=='log-projects')
+    assert json.loads(registry.text)==inventory.registry,'client project registry differs from YAML'
     search=json.loads(output_file(site,inventory.baseurl+'/log/search.json',inventory.baseurl).read_text())
     assert Counter(e['url'] for e in search)==Counter(expected.keys()),'full-text search index must contain every log once'
     assert all(isinstance(e.get('body'),str) for e in search),'invalid full-text body'
@@ -58,8 +64,26 @@ def validate(source, site):
         assert len(sections)==1,topic['slug']
         listing=next(n for n in sections[0].walk() if n.has('log-timeline-list'))
         assert listing.links()==[d.url for d in docs],f"timeline ordering/count: {topic['slug']}"
+        assert f'({len(docs)} entries)' in sections[0].text,topic['slug']
+    for key in inventory.registry:
+        docs=[d for d in inventory.logs if key in d.meta.get('projects', [])]
+        sections=[n for n in timelines.walk() if n.attrs.get('id')==f'project-{key}']
+        if not docs:assert not sections;continue
+        assert len(sections)==1,key
+        section=sections[0]
+        listing=next(n for n in section.walk() if n.has('log-timeline-list'))
+        assert listing.links()==[d.url for d in docs],f'project timeline ordering/count: {key}'
+        assert f'({len(docs)} entries)' in section.text,key
     research=tree(site,inventory.baseurl+'/research/',inventory.baseurl)
     main=next(n for n in research.walk() if n.tag=='main')
+    for draft in inventory.project_drafts:
+        assert not output_file(site,draft.url,inventory.baseurl).exists(),f'{draft.path}: unpublished project was rendered'
+        assert draft.url not in main.links(),f'{draft.path}: unpublished project was linked'
+    for key in inventory.registry:
+        section=next(n for n in main.walk() if n.attrs.get('data-programme')==key)
+        if inventory.project_counts[key]:
+            assert inventory.baseurl+f'/log/timelines/#project-{key}' in section.links(),key
+            assert inventory.baseurl+f'/log/?project={key}' in section.links(),key
     for doc in inventory.projects+inventory.technical:
         assert main.links().count(doc.url)==1,f'{doc.path}: research listing must appear once'
     for project in inventory.projects:
@@ -78,18 +102,35 @@ def validate(source, site):
     series=defaultdict(list)
     for doc in inventory.posts:
         if doc.series:series[doc.series].append(doc)
+    logs_by_day=defaultdict(list)
+    for doc in inventory.logs:
+        logs_by_day[doc.day].append(doc)
     for index,doc in enumerate(inventory.logs):
         page=tree(site,doc.url,inventory.baseurl)
         prev=[n.attrs['href'] for n in page.walk() if n.has('log-pagination-prev')]
         nxt=[n.attrs['href'] for n in page.walk() if n.has('log-pagination-next')]
         assert prev==([inventory.logs[index-1].url] if index else []),f'{doc.path}: previous log'
         assert nxt==([inventory.logs[index+1].url] if index+1<len(inventory.logs) else []),f'{doc.path}: next log'
+        project_links=[url for n in page.walk() if n.attrs.get('aria-label')=='Entry projects' for url in n.links()]
+        assert project_links==[inventory.baseurl+f'/log/?project={key}' for key in doc.meta.get('projects', [])],doc.path
+        related=next(n for n in page.walk() if n.attrs.get('aria-label')=='Related log entries')
+        candidates=[]
+        for day in doc.meta.get('related', []):
+            candidates.extend(d.url for d in logs_by_day[str(day)[:10]] if d.url!=doc.url)
+        for field in ['projects', 'tags']:
+            values=set(doc.meta.get(field, []))
+            candidates.extend(d.url for d in reversed(inventory.logs) if d.url!=doc.url and values.intersection(d.meta.get(field, [])))
+        assert related.links()==list(dict.fromkeys(candidates))[:3],f'{doc.path}: related entry priority'
     for doc in inventory.posts:
         page=tree(site,doc.url,inventory.baseurl)
         assert sum(n.tag=='h1' for n in page.walk())==1,f'{doc.path}: article heading'
         if doc.category in {'projects','technical'}:
             breadcrumb=next(n for n in page.walk() if n.has('research-breadcrumbs'))
             assert inventory.baseurl+'/research/' in breadcrumb.links()
+            if doc.category=='projects':
+                key=doc.meta.get('research_programme')
+                if inventory.project_counts[key]:
+                    assert inventory.baseurl+f'/log/timelines/#project-{key}' in page.links(),doc.path
             if doc.category=='technical':
                 parent=next((p for p in inventory.projects if doc.meta.get('research_programme') and p.meta.get('research_programme')==doc.meta.get('research_programme')),None)
                 if parent:assert parent.url in breadcrumb.links(),f'{doc.path}: missing programme breadcrumb'
@@ -101,7 +142,7 @@ def validate(source, site):
             assert nxt==([siblings[i+1].url] if i+1<len(siblings) else []),f'{doc.path}: series next'
     ET.parse(site/'feed.xml')
     assert not errors,'Broken internal links:\n'+'\n'.join(errors)
-    print(f'PASS: {len(pages)} pages; {len(inventory.posts)} articles; {len(inventory.logs)} logs; current taxonomy, indexing, relationships, navigation, RSS and internal links')
+    print(f'PASS: {len(pages)} pages; {len(inventory.posts)} articles; {len(inventory.logs)} logs; current taxonomy, project registry, indexing, relationships, navigation, RSS and internal links')
     return inventory
 
 if __name__=='__main__':
