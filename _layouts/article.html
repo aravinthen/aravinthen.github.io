@@ -19,7 +19,10 @@ layout: default
   {% if repository %}{% unless content contains repository %}<p class="article-links"><a href="{{ repository | escape }}">Experimental implementation ↗</a></p>{% endunless %}{% endif %}
   {% assign related = page.related_notes | default: metadata.related_notes %}
   {% if related.size > 0 %}<aside class="article-related"><h2>Related articles</h2><ul>{% for note in related %}<li><a href="{{ note.url | relative_url }}">{{ note.title }}</a></li>{% endfor %}</ul></aside>{% endif %}
-  {% if page.category == 'projects' %}{% include programme-notes.html project=page existing_content=content %}{% endif %}
+  {% if page.category == 'projects' %}
+    {% include programme-log-links.html id=page.research_programme %}
+    {% include programme-notes.html project=page existing_content=content %}
+  {% endif %}
   {% if page.category == 'technical' and page.research_programme %}
     {% assign programme = site.posts | where: 'category', 'projects' | where: 'research_programme', page.research_programme | first %}
     {% assign programme_metadata = site.data.writing[programme.url] %}
