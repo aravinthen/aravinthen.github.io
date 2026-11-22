@@ -3,7 +3,7 @@ Starts an isolated local server unless --base-url / SITE_URL is supplied.
 """
 from collections import Counter
 import json
-from urllib.parse import urlencode
+from urllib.parse import urlencode, parse_qs, urlsplit
 from support import Inventory, args, server, launch, verified_cdn, tree
 
 def browser_checks(source, site, base_url=None):
@@ -66,19 +66,52 @@ def browser_checks(source, site, base_url=None):
             for tag,count in inventory.counts.items():
                 visit(inventory.baseurl+'/log/?'+urlencode({'tag':tag}))
                 visible(count)
-                assert page.locator(f'input[value="{tag}"]').is_checked()
-                assert f'({count})' in page.locator(f'label:has(input[value="{tag}"])').inner_text()
+                assert page.locator(f'#log-tag-filters input[value="{tag}"]').is_checked()
+                assert f'({count})' in page.locator(f'#log-tag-filters label:has(input[value="{tag}"])').inner_text()
                 actual=set(page.locator('.log-item:not([hidden])').evaluate_all('(els)=>els.map(e=>e.dataset.url)'))
                 assert actual=={d.url for d in inventory.logs if tag in d.meta['tags']},tag
             for alias,tag in inventory.aliases.items():
                 if tag not in inventory.counts:continue
                 visit(inventory.baseurl+'/log/?'+urlencode({'tag':alias}));visible(inventory.counts[tag])
-                assert page.locator(f'input[value="{tag}"]').is_checked(),alias
+                assert page.locator(f'#log-tag-filters input[value="{tag}"]').is_checked(),alias
             dual=next((d for d in inventory.logs if len(d.meta['tags'])==2),None)
             if dual:
                 query=urlencode([('tag',t) for t in dual.meta['tags']])
                 visit(inventory.baseurl+'/log/?'+query)
                 visible(sum(set(dual.meta['tags'])<=set(d.meta['tags']) for d in inventory.logs))
+            for key,count in inventory.project_counts.items():
+                visit(inventory.baseurl+'/log/?'+urlencode({'project':key}))
+                visible(count)
+                chip=page.locator(f'#log-project-filters input[value="{key}"]')
+                assert chip.is_checked()
+                assert f'({count})' in chip.locator('..').inner_text()
+                actual=set(page.locator('.log-item:not([hidden])').evaluate_all('(els)=>els.map(e=>e.dataset.url)'))
+                assert actual=={d.url for d in inventory.logs if key in d.meta.get('projects', [])},key
+                visit(inventory.baseurl+f'/log/timelines/#project-{key}')
+                project_timeline=page.locator(f'#project-{key}')
+                assert project_timeline.evaluate('(e)=>e.open')
+                assert project_timeline.locator('li').count()==count
+            if len(inventory.project_counts)>=2:
+                first,second=list(inventory.project_counts)[:2]
+                sample=next(d for d in inventory.logs if first in d.meta.get('projects', []))
+                tag=sample.meta['tags'][0]
+                month=sample.day[:7]
+                params={'project':[first,second],'tag':tag,'month':month,'q':tag}
+                visit(inventory.baseurl+'/log/?'+urlencode(params,doseq=True))
+                matches=[d for d in inventory.logs if d.day.startswith(month) and tag in d.meta['tags']]
+                visible(sum(bool({first,second}.intersection(d.meta.get('projects', []))) for d in matches))
+                chip=page.locator(f'#log-project-filters input[value="{first}"]')
+                page.locator(f'#log-project-filters input[value="{second}"]').uncheck()
+                visible(sum(first in d.meta.get('projects', []) for d in matches))
+                assert parse_qs(urlsplit(page.url).query)['project']==[first]
+                page.locator('#log-clear-filters').click()
+                visible(len(inventory.logs))
+                assert not urlsplit(page.url).query
+                page.go_back()
+                visible(sum(first in d.meta.get('projects', []) for d in matches))
+                assert chip.is_checked()
+                page.go_forward()
+                visible(len(inventory.logs))
             month_counts=Counter(d.day[:7] for d in inventory.logs)
             visit(inventory.baseurl+'/log/')
             for month,count in month_counts.items():
@@ -128,7 +161,7 @@ def browser_checks(source, site, base_url=None):
                 assert page.locator('.log-item:not([hidden])').count()>0,'title/tag fallback failed'
             assert not errors,errors
         browser.close()
-    print('PASS: current navigation, responsive/focus/font/TOC checks, full text/fallback, all tags and aliases, dual filters, months, calendar, timelines, representative rendering')
+    print('PASS: current navigation, responsive/focus/font/TOC checks, full text/fallback, all tags, aliases and projects, combined filters and history, months, calendar, timelines, representative rendering')
 
 def audit_page(page,file,site,base,baseurl):
     relative=file.relative_to(site).as_posix()
