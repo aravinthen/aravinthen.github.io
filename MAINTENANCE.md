@@ -26,7 +26,7 @@ front matter even when the tag has aliases.
 
 For a project, use one stable tag across its logs. A log can carry tags for
 several projects as well as subject tags. The current project tags are
-`bluedot-project`, `hivemarket`, and `castalia-comonitoring`. The October
+`bluedot-project`, `hivemarket`, and `co-monitoring`. The October
 BlueDot course has its own article and study notes.
 
 On `/log/`, repeated `tag` parameters require all selected tags. For
