@@ -1,4 +1,4 @@
-/* Client-side logbook search, topic and project filtering, history, and activity calendar.
+/* Client-side logbook search, tag filtering, history, and activity calendar.
    All entry content is sourced from Jekyll's site.log collection. */
 (function () {
   'use strict';
@@ -20,7 +20,6 @@
       month: element.dataset.month,
       title: element.dataset.title,
       tags: element.dataset.tags ? element.dataset.tags.split('|').filter(Boolean) : [],
-      projects: element.dataset.projects ? element.dataset.projects.split('|').filter(Boolean) : [],
       excerpt: (element.querySelector('.log-item-excerpt') || {}).textContent || ''
     };
   });
@@ -30,20 +29,16 @@
   }
 
   const taxonomy = JSON.parse(document.getElementById('log-taxonomy').textContent);
-  const projects = JSON.parse(document.getElementById('log-projects').textContent);
-  const projectTitles = new Map(Object.entries(projects).map(function ([id, project]) {
-    return [id, project.title];
-  }));
   const topicTitles = new Map(taxonomy.map(function (topic) { return [topic.slug, topic.title]; }));
   const aliases = new Map();
   taxonomy.forEach(function (topic) { (topic.aliases || []).forEach(function (alias) { aliases.set(alias, topic.slug); }); });
 
-  function makeFilters(containerId, name, field, titles) {
-    const container = document.getElementById(containerId);
+  function makeFilters() {
+    const container = document.getElementById('log-tag-filters');
     const counts = new Map();
     rows.forEach(function (row) {
-      row[field].forEach(function (id) {
-        if (titles.has(id)) counts.set(id, (counts.get(id) || 0) + 1);
+      row.tags.forEach(function (id) {
+        counts.set(id, (counts.get(id) || 0) + 1);
       });
     });
     return Array.from(counts.keys()).sort(function (a, b) {
@@ -54,9 +49,9 @@
       const input = document.createElement('input');
       input.type = 'checkbox';
       input.value = id;
-      input.name = name;
+      input.name = 'tag';
       const caption = document.createElement('span');
-      caption.textContent = titles.get(id) + ' (' + counts.get(id) + ')';
+      caption.textContent = (topicTitles.get(id) || id) + ' (' + counts.get(id) + ')';
       label.append(input, caption);
       container.appendChild(label);
       input.addEventListener('change', function () { update(true, true); });
@@ -64,9 +59,7 @@
     });
   }
 
-  const tagFilters = makeFilters('log-tag-filters', 'tag', 'tags', topicTitles);
-  const projectFilters = makeFilters('log-project-filters', 'project', 'projects', projectTitles);
-  const filters = tagFilters.concat(projectFilters);
+  const tagFilters = makeFilters();
 
   function selected(inputs) {
     return inputs.filter(function (input) { return input.checked; }).map(function (input) { return input.value; });
@@ -77,10 +70,8 @@
     search.value = params.get('q') || '';
     const month = params.get('month') || '';
     monthSelect.value = Array.from(monthSelect.options).some(function (opt) { return opt.value === month; }) ? month : '';
-    const requested = new Set(params.getAll('tag').map(function (tag) { return aliases.get(tag) || tag; }));
+    const requested = new Set(params.getAll('tag').concat(params.getAll('project')).map(function (tag) { return aliases.get(tag) || tag; }));
     tagFilters.forEach(function (input) { input.checked = requested.has(input.value); });
-    const requestedProjects = new Set(params.getAll('project'));
-    projectFilters.forEach(function (input) { input.checked = requestedProjects.has(input.value); });
   }
 
   function writeUrl(push) {
@@ -91,7 +82,7 @@
     url.searchParams.delete('project');
     if (search.value.trim()) url.searchParams.set('q', search.value.trim());
     if (monthSelect.value) url.searchParams.set('month', monthSelect.value);
-    filters.forEach(function (input) { if (input.checked) url.searchParams.append(input.name, input.value); });
+    tagFilters.forEach(function (input) { if (input.checked) url.searchParams.append(input.name, input.value); });
     if (url.href !== window.location.href) {
       window.history[push ? 'pushState' : 'replaceState'](null, '', url.pathname + url.search + url.hash);
     }
@@ -125,9 +116,8 @@
     const query = normalise(search.value.trim());
     const words = query.split(/\s+/).filter(Boolean);
     const tagSelection = selected(tagFilters);
-    const projectSelection = selected(projectFilters);
     const selectedMonth = monthSelect.value;
-    const isFiltering = words.length > 0 || tagSelection.length > 0 || projectSelection.length > 0 || Boolean(selectedMonth);
+    const isFiltering = words.length > 0 || tagSelection.length > 0 || Boolean(selectedMonth);
     let bodyIndex = null;
 
     if (words.length) bodyIndex = await loadFullText();
@@ -146,7 +136,6 @@
         ' ' + (bodyIndex ? (bodyIndex.get(row.url) || '') : '');
       const matches = (!selectedMonth || row.month === selectedMonth) &&
         tagSelection.every(function (tag) { return row.tags.includes(tag); }) &&
-        (projectSelection.length === 0 || projectSelection.some(function (id) { return row.projects.includes(id); })) &&
         words.every(function (word) { return text.includes(word); });
       row.element.hidden = !matches;
       if (matches) {
@@ -183,7 +172,7 @@
     window.clearTimeout(debounceTimer);
     search.value = '';
     monthSelect.value = '';
-    filters.forEach(function (input) { input.checked = false; });
+    tagFilters.forEach(function (input) { input.checked = false; });
     update(true, true);
   });
   document.getElementById('log-expand-all').addEventListener('click', function () {

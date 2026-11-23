@@ -13,59 +13,33 @@ styles, navigation and JavaScript require no changes for ordinary publishing.
 layout: log
 title: "Your entry title"
 date: YYYY-MM-DD
-tags: [game-theory, bluedot-project]
-projects: [bluedot-project, hivemarket] # optional
+tags: [game-theory, bluedot-project, hivemarket]
 math: true # optional
 ---
 ```
 
-Write your entry beneath the front matter. Choose **one** canonical tag, or **two**
-when another distinct subject is substantially discussed. No duplicate tags.
+Use a nonempty list of unique lowercase slugs. Separate words with hyphens.
+Add a new topic or project tag directly to a log’s front matter. The tag will
+appear in the filter and get a timeline automatically. Optionally add an entry
+to `_data/log_topics.yml` for a display name or URL alias. Use the slug in
+front matter even when the tag has aliases.
 
-| Canonical topic slug | Display name |
-| --- | --- |
-| `reinforcement-learning` | Reinforcement learning |
-| `deep-learning` | Deep learning |
-| `post-training` | Post-training and reasoning |
-| `ai-safety` | AI safety and alignment |
-| `multi-agent` | Multi-agent methods |
-| `systems` | Systems and engineering |
-| `mathematics` | Mathematics |
-| `general` | General |
-| `bluedot-project` | BlueDot AI Safety Project |
-| `game-theory` | Game Theory and Mechanism Design |
+For a project, use one stable tag across its logs. A log can carry tags for
+several projects as well as subject tags. The current project tags are
+`bluedot-project`, `hivemarket`, and `castalia-comonitoring`. The October
+BlueDot course has its own article and study notes.
 
-`_data/log_topics.yml` is the canonical list. Legacy aliases work in filter URLs.
-Use canonical slugs in front matter. `game-theory` now selects its own topic.
-Use `bluedot-project` for the November project sprint. The October course has
-its own historical article and reading series.
+On `/log/`, repeated `tag` parameters require all selected tags. For
+example, `/log/?tag=game-theory&tag=bluedot-project` combines a subject and a
+project. Use `month=YYYY-MM` and `q` to narrow the results further. Existing
+`?project=ID` links select the corresponding tag.
 
-Use the optional `projects` list for investigations the entry advances. List each
-applicable ID once. To leave a log unaffiliated, omit `projects` or use `[]`.
-
-| Canonical project ID | Programme |
-| --- | --- |
-| `bluedot-project` | BlueDot AI Safety Project |
-| `hivemarket` | HIVEMARKET |
-| `castalia-comonitoring` | Castalia / Co-monitoring |
-
-`/log/` combines topic, project, month and search with AND. Repeated `tag`
-parameters require **all** selected topics. Repeated `project` parameters match
-**any** selected project. For example,
-`/log/?tag=game-theory&project=bluedot-project&project=hivemarket` shows game
-theory entries from either project. Use `month=YYYY-MM` for the month and `q`
-for search. Filter controls record browser history. Typing a search updates
-the current URL.
-
-Jekyll generates chronological topic timelines from `tags` and project
-timelines from `projects`. A project timeline uses the fragment
-`/log/timelines/#project-PROJECT-ID` and appears when the project has at least
-one log. Archive badges count all published logs for each topic or project.
-Previous/next links and the activity calendar update automatically. Related
-entries show up to three links, starting with any dates in an optional
-`related: ['2026-11-16']` list, then recent logs sharing a project, then recent
-logs sharing a topic. `math: true` enables MathJax. Layouts also detect rendered
-math boundaries.
+Jekyll generates a chronological timeline for each tag in use.
+Copy the timeline link from the timelines page to share it. Previous/next links and the activity
+calendar update automatically. Related entries show up to three links,
+starting with an optional `related: ['2026-11-16']` list, then recent entries
+sharing a project tag, then recent entries sharing any other tag.
+`math: true` enables MathJax. Layouts also detect rendered math boundaries.
 
 **Technical note:** create `_posts/technical/YYYY-MM-DD-slug.md`:
 
@@ -85,34 +59,22 @@ for an independent note. An unmatched identifier also appears independently, but
 usually indicates a spelling error. The Research index and programme breadcrumbs
 update automatically; no manually maintained list is needed.
 
-**Research project:** To add an active programme, register a stable, unique,
-lowercase hyphenated ID and a `title` in `_data/research_projects.yml`.
-`programme_title` optionally supplies a longer heading for the Research index
-before the article is ready. Use the ID in associated log entries. To add a
-project article, create `_posts/projects/YYYY-MM-DD-slug.md`:
+**Research project:** Create `_posts/projects/YYYY-MM-DD-slug.md`:
 
 ```yaml
 ---
 title: "Your programme title"
 category: projects
-research_programme: your-unique-programme-id
-published: false # hold for author review
-# Optional author-supplied metadata:
-# repository: https://github.com/OWNER/REPOSITORY
-# status: "Your status"
-# topics: [your-topic]
-# summary: "Your own description"
+research_programme: your-project-tag
 ---
 ```
 
-Reuse the registry ID as `research_programme` on the project article and its
-technical notes. Keep `published: false` until the article has been reviewed.
-The Research index shows the programme and its log links while the article is
-a draft. Once published, the article appears there with its associated technical
-notes and a link to its project timeline. The generated project navigation omits
-links already present in the article. Without your `summary`,
-the Research index uses a visibly truncated, unchanged extract. Never generate
-summaries as part of publishing.
+Use the same slug in the project article’s `research_programme`, in associated
+technical notes, and in the `tags` of relevant daily logs. Matching logs and
+technical notes appear before the article body. Add your overview in the
+Markdown body when it is ready. Set `published: false` if you want to keep
+the entire page out of the build. The Research index lists published projects
+together. Add an optional `repository` URL to link to the implementation.
 
 **Literature review:** create `_posts/literature/YYYY-MM-DD-slug.md`:
 
@@ -175,7 +137,7 @@ ignored by Git and is never content to commit. `bundle exec jekyll build` and
 | Command | Purpose |
 | --- | --- |
 | `make build` | GitHub Pages-compatible local Jekyll build |
-| `make check` | Build plus fast current-content, YAML, topic and project metadata, indexes, timelines, relationships, links, search and navigation checks |
+| `make check` | Build plus fast current-content, YAML, tags and project associations, indexes, timelines, relationships, links, search and navigation checks |
 | `make serve` | Local development server with regeneration |
 | `make test-growth` | Disposable additions/edits, including expanded taxonomy, built and checked |
 | `make test` | Fast checks, growth scenarios and normal desktop/mobile browser regressions |
@@ -235,8 +197,7 @@ to `/research/`; individual article URLs remain independent.
 | Problem | Check |
 | --- | --- |
 | Invalid YAML | Opening/closing `---`, spaces instead of tabs, quote titles containing colons, no duplicate keys; error includes the source filename |
-| Tag error | Use one or two unique slugs from `_data/log_topics.yml`; new topics go there with matching `slug`/`tags` and non-conflicting optional `aliases` |
-| Invalid project metadata | Use a list of unique IDs from `_data/research_projects.yml` in `projects` |
+| Tag error | Use unique lowercase slugs. Optionally add a display label in `_data/log_topics.yml` with matching `slug`/`tags` and non-conflicting `aliases` |
 | Missing programme association | Project and note need identical `research_programme`; project IDs must be unique |
 | Missing series/navigation | Check exact `series` spelling or the existing URL key in `_data/writing.yml` |
 | Broken internal link | Match the generated URL and heading fragment; do not rename old slugs casually |
